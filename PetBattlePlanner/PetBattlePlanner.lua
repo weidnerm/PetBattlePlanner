@@ -176,6 +176,8 @@ function PetBattlePlanner_Slash_Handler(msg)
       PetBattlePlanner_MainForm:SetPoint("CENTER", UIParent, "CENTER",0,0)
    elseif (msg == "reset") then
       PetBattlePlanner_ResetDB();
+   elseif (msg == "dbfix") then
+      PetBattlePlanner_FixDB();
    elseif (msg == "report") then
       PetBattlePlanner_GenerateReport();
       print("Report generation complete");
@@ -199,6 +201,27 @@ function PetBattlePlanner_Slash_Handler(msg)
 
 end
 
+function PetBattlePlanner_FixDB()
+   local name,npcInfo
+   for name,npcInfo in pairs(PetBattlePlanner_db.Opponents) do
+      
+      local myPetIndex, myPetInfo
+      
+      for myPetIndex, myPetInfo in pairs(npcInfo.MyTeam) do 
+         
+         if (npcInfo.MyTeam[myPetIndex].PairedWith == nil ) then
+           
+            if ( npcInfo.Team[myPetIndex] ~= nil ) then -- find out if enemy team has entry in same slot as us.
+               npcInfo.MyTeam[myPetIndex].PairedWith = npcInfo.Team[myPetIndex].Name;
+   --            print("NPC="..name.." MyTeam["..myPetIndex.."]="..npcInfo.MyTeam[myPetIndex].Name.." paired with "..npcInfo.Team[myPetIndex].Name)
+            elseif ( npcInfo.Team[1] ~= nil ) then -- try to use enemy pet [1].
+               npcInfo.MyTeam[myPetIndex].PairedWith = npcInfo.Team[1].Name;
+   --            print("NPC="..name.." MyTeam["..myPetIndex.."]="..npcInfo.MyTeam[myPetIndex].Name.." paired with "..npcInfo.Team[1].Name)
+            end
+         end
+      end
+   end
+end
 
 
 
@@ -241,7 +264,7 @@ function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
 
          print("Battling "..PetBattlePlanner_lastTargetName);
          
-         PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName] = {};
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName] = PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName] or {};
          PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"] = {};
          
          
@@ -287,6 +310,14 @@ function PetBattlePlanner_handle_PLAYER_TARGET_CHANGED()
    if ( lastTargetName ) then
       PetBattlePlanner_lastTargetName = lastTargetName;
 --      print("PLAYER_TARGET_CHANGED->"..PetBattlePlanner_lastTargetName);
+
+
+      if ( PetBattlePlanner_db ~= nil ) and
+         ( PetBattlePlanner_db["Opponents"] ~= nil ) and
+         ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName] ~= nil ) then
+   
+         PetBattlePlanner_SetOpponentNpcName(PetBattlePlanner_lastTargetName);
+      end
    end
 end
 
@@ -301,6 +332,47 @@ function PetBattlePlanner_SetSelectedPetClickHandler(frameIndex)
 
    PetBattlePlanner_UpdateGui();
 end
+
+function PetBattlePlanner_SetSelectedTeamClickHandler(frameIndex,teamSlot)
+   local sliderPos = PetBattlePlanner_PetInfoFrameSlider:GetValue();
+   
+   if ( sliderPos+frameIndex <= #playerSortedList ) then
+      petIndexInJournal = playerSortedList[sliderPos+frameIndex];
+      
+      local petID, speciesID, owned, customName, level, favorite, isRevoked, speciesName, icon, petType, companionID, tooltip, description, isWild, canBattle, isTradeable, isUnique, obtainable = C_PetJournal.GetPetInfoByIndex(petIndexInJournal);
+
+      if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) and
+         ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team ~= nil ) then
+            
+         if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam == nil ) then  -- create team structure if necessary
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam = {}
+         end
+   
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot] = {}
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].Id = petID;
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].Name = speciesName;
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].AbilityList = {};
+
+         -- pair with enemy in corresponding slot. or with enemy slot 1 if our corresponding enemy slot is empty
+         if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[teamSlot] ~= nil ) then -- find out if enemy team has entry in same slot as us.
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].PairedWith = 
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[teamSlot].Name;
+         elseif ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[1] ~= nil ) then -- try to use enemy pet [1].
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].PairedWith = 
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[1].Name;
+         end
+         
+         local abilitySlotIndex;
+         for abilitySlotIndex = 1,3 do 
+            local abilityId, abilityName, abilityIcon, maxCooldown, unparsedDescription, numTurns, abilityPetType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(petID, abilityIndex);
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[teamSlot].AbilityList[abilitySlotIndex] = abilityId;
+         end
+      end
+   end
+
+   PetBattlePlanner_UpdateGui();
+end
+
 
 --function PetBattlePlanner_handle_UNIT_TARGET()
 --   print("Got to UNIT_TARGET");
@@ -378,7 +450,8 @@ function PetBattlePlanner_GenerateReport()
    PetBattlePlanner_ResetLocalDB();
    
    PetBattlePlanner_db["Report"] = {};
-   
+   PetBattlePlanner_PetInfoFrameSlider:SetValue(1);
+
    local printOut = PetBattlePlanner_db["Report"];
    
    local myNumPets;
@@ -585,6 +658,33 @@ function PetBattlePlanner_UpdatePetListMenu()
    end
 end
 
+function PetBattlePlanner_SetCurrentTeam()
+   
+   local reportText = white.."PetBattlePlanner: Team Set to: ";
+   local slotIndex
+   for slotIndex = 1,3 do
+            
+      if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil) and
+         ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
+         ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] ~= nil ) then
+      
+         local petGUID        = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Id;
+         local displayName    = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Name;
+                  
+         local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(petGUID);
+         local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petGUID);
+      
+         local formattedInfo = string.format("%s(%d)%s%s",yellow,level,  RARITY_COLOR[rarity],name)
+         reportText = reportText..formattedInfo;
+         
+         C_PetJournal.SetPetLoadOutInfo(slotIndex,petGUID);
+      end
+   end
+   print(reportText)
+   
+end
+
+
 function PetBattlePlanner_SetOpponentNpcName(opponentName)
    PetBattlePlanner_OpponentName = opponentName;  
    PetBattlePlanner_OpponentPetIndex = 1;
@@ -756,42 +856,42 @@ function PetBattlePlanner_UpdateGui()
             
             if ( petID ~= nil ) then
                 health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petID);
+      
+               local idTable, levelTable = C_PetJournal.GetPetAbilityList(speciesID);
+         
+               local enemyType = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName]["Team"][PetBattlePlanner_OpponentPetIndex]["PetType"]
+         
+               local abilityIndex;
+               for abilityIndex = 1,6 do
+                  local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( idTable[REORDER_ABILITIES_IN_PAIRS[abilityIndex]] )
+   
+                  PetBattlePlanner_PetInfoFrameAbilityFrame[subsetIndex][abilityIndex]:SetTexture(abilityIcon);
+                  PetBattlePlanner_PetInfoFrameAbilityTypeFrame[subsetIndex][abilityIndex]:SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
+                  local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, enemyType);
+                  PetBattlePlanner_PetInfoFrameAbilityStrengthFrame[subsetIndex][abilityIndex]:SetTexture(ATTACK_RESULT_TEXTURES[attackResult]);
+               end
+               
+   
+               PetBattlePlanner_PetPortraitFrameTexture[subsetIndex]:SetTexture(icon);
+               PetBattlePlanner_PetInfoFrameName[subsetIndex]:SetText( string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],speciesName));
+               PetBattlePlanner_PetInfoFrameHealthText[subsetIndex]:SetText( string.format("%s%d",white, maxHealth ));
+               PetBattlePlanner_PetInfoFrameAttackPwrText[subsetIndex]:SetText( string.format("%s%d",white, power ));
+               PetBattlePlanner_PetInfoFrameHasteText[subsetIndex]:SetText( string.format("%s%d",white, speed ));
+               PetBattlePlanner_PetInfoFrameHealthIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+               PetBattlePlanner_PetInfoFrameHealthIcon[subsetIndex]:SetTexCoord(0.5, 1 ,0.5, 1)
+               PetBattlePlanner_PetInfoFrameAttackPowerIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+               PetBattlePlanner_PetInfoFrameAttackPowerIcon[subsetIndex]:SetTexCoord(0, .5 ,0, .5)
+               PetBattlePlanner_PetInfoFrameHasteIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+               PetBattlePlanner_PetInfoFrameHasteIcon[subsetIndex]:SetTexCoord(0, .5 ,0.5, 1)
+               PetBattlePlanner_PetInfoFrameTypeIcon[subsetIndex]:SetTexture(PET_TYPE_TEXTURES[petType]);
+   
+               --
+               -- update selected pet indication.
+               --
+               if ( myPetIndex == PetBattlePlanner_CurrentPetIndexInJournal ) then
+                  PetBattlePlanner_PetInfoFrameSelectionBoxFrame[subsetIndex]:Show();
+               end
             end            
-      
-            local idTable, levelTable = C_PetJournal.GetPetAbilityList(speciesID);
-      
-            local enemyType = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName]["Team"][PetBattlePlanner_OpponentPetIndex]["PetType"]
-      
-            local abilityIndex;
-            for abilityIndex = 1,6 do
-               local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( idTable[REORDER_ABILITIES_IN_PAIRS[abilityIndex]] )
-
-               PetBattlePlanner_PetInfoFrameAbilityFrame[subsetIndex][abilityIndex]:SetTexture(abilityIcon);
-               PetBattlePlanner_PetInfoFrameAbilityTypeFrame[subsetIndex][abilityIndex]:SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
-               local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, enemyType);
-               PetBattlePlanner_PetInfoFrameAbilityStrengthFrame[subsetIndex][abilityIndex]:SetTexture(ATTACK_RESULT_TEXTURES[attackResult]);
-            end
-            
-
-            PetBattlePlanner_PetPortraitFrameTexture[subsetIndex]:SetTexture(icon);
-            PetBattlePlanner_PetInfoFrameName[subsetIndex]:SetText( string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],speciesName));
-            PetBattlePlanner_PetInfoFrameHealthText[subsetIndex]:SetText( string.format("%s%d",white, maxHealth ));
-            PetBattlePlanner_PetInfoFrameAttackPwrText[subsetIndex]:SetText( string.format("%s%d",white, power ));
-            PetBattlePlanner_PetInfoFrameHasteText[subsetIndex]:SetText( string.format("%s%d",white, speed ));
-            PetBattlePlanner_PetInfoFrameHealthIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
-            PetBattlePlanner_PetInfoFrameHealthIcon[subsetIndex]:SetTexCoord(0.5, 1 ,0.5, 1)
-            PetBattlePlanner_PetInfoFrameAttackPowerIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
-            PetBattlePlanner_PetInfoFrameAttackPowerIcon[subsetIndex]:SetTexCoord(0, .5 ,0, .5)
-            PetBattlePlanner_PetInfoFrameHasteIcon[subsetIndex]:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
-            PetBattlePlanner_PetInfoFrameHasteIcon[subsetIndex]:SetTexCoord(0, .5 ,0.5, 1)
-            PetBattlePlanner_PetInfoFrameTypeIcon[subsetIndex]:SetTexture(PET_TYPE_TEXTURES[petType]);
-
-            --
-            -- update selected pet indication.
-            --
-            if ( myPetIndex == PetBattlePlanner_CurrentPetIndexInJournal ) then
-               PetBattlePlanner_PetInfoFrameSelectionBoxFrame[subsetIndex]:Show();
-            end
 
          else
             --
@@ -873,18 +973,74 @@ function PetBattlePlanner_UpdateGui()
       
       PetBattlePlanner_PetInfoFrameSlider:SetMinMaxValues(1, sliderLimit);
       
-   end
+      --
+      -- update team list info
+      --
+      
+      do
+         local slotIndex
+         for slotIndex = 1,3 do
+            
+            --
+            -- display enemy team info
+            --
+            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[slotIndex] ~= nil ) then
    
-
-
--- local yellow = "|c00FFFF25";
--- local white  = "|c00FFFFff";
--- local red    = "|c00FF0000";
--- local green  = "|c0000ff00";
--- local blue   = "|c000000ff";
-
-
-
+               local displayLevel   = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[slotIndex].Level or 0;
+               local displayName    = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[slotIndex].Name or "unknown";
+               local displayRarity  = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[slotIndex].Rarity or 1;
+               local formattedInfo = string.format("%s%d %s%s",yellow,displayLevel,  RARITY_COLOR[displayRarity],displayName );
+    
+               PetBattlePlanner_EnemyTeamNamesFrame[slotIndex]:SetText(formattedInfo);
+            else
+               PetBattlePlanner_EnemyTeamNamesFrame[slotIndex]:SetText(nil);
+            end
+      
+            --
+            -- display My team info
+            --
+            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] ~= nil ) then
+   
+               local displaySlotIndex = slotIndex;
+               local petGUID        = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Id;
+               local displayName    = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Name;
+               
+               -- try to figure out if we are paired with an enemy in a different slot.
+               local loopIndex;
+               for loopIndex = 1,3 do
+                  if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].PairedWith ~= nil ) and
+                     
+                     ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[loopIndex] ~= nil ) and
+                     ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[loopIndex].Name ~= nil ) and
+                     
+                     ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[slotIndex] ~= nil ) and
+                     
+                     ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].PairedWith == 
+                       PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[loopIndex].Name ) then
+                        displaySlotIndex = loopIndex;
+                  end
+               end
+               
+               local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(petGUID);
+               local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petGUID);
+   
+               local formattedInfo = string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],name)
+   
+               PetBattlePlanner_TeamNamesFrame[displaySlotIndex]:SetText(formattedInfo);
+            else
+               PetBattlePlanner_TeamNamesFrame[slotIndex]:SetText(nil);
+            end
+         end
+      end
+         
+            
+      
+      
+   end
 end
 
 
@@ -1402,21 +1558,21 @@ function PetBattlePlanner_SetUpGuiFields()
                   text = "Add to team slot 1",
                   notCheckable = true,
                   func = function(self, arg)
-                     print("clicked");
+                     PetBattlePlanner_SetSelectedTeamClickHandler(arg,1);
                      end
                },
                {
                   text = "Add to team slot 2",
                   notCheckable = true,
                   func = function(self, arg)
-                     print("clicked");
+                     PetBattlePlanner_SetSelectedTeamClickHandler(arg,2);
                      end
                },
                {
                   text = "Add to team slot 3",
                   notCheckable = true,
                   func = function(self, arg)
-                     print("clicked");
+                     PetBattlePlanner_SetSelectedTeamClickHandler(arg,3);
                      end
                }
             }
@@ -1448,9 +1604,13 @@ function PetBattlePlanner_SetUpGuiFields()
                         GameTooltip:Show()
                      end)
             myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+            myButton:RegisterForClicks( "LeftButtonUp","RightButtonUp" );
             myButton:SetScript("OnClick", function(self,button,down)
-               EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_PetPortraitFrameButton"..frameIndex ,0,0, nil, 10)
-                
+                  if ( button == "LeftButton" ) then
+                     PetBattlePlanner_SetSelectedPetClickHandler(frameIndex-1);
+                  elseif ( button == "RightButton" ) then                  
+                     EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_PetPortraitFrameButton"..frameIndex ,0,0, nil, 10)
+                  end
                end)
             PetBattlePlanner_PetPortraitFrameButton[frameIndex] = myButton;
 
@@ -1928,25 +2088,104 @@ function PetBattlePlanner_SetUpGuiFields()
       PetBattlePlanner_TabPage1:SetScript("OnMouseWheel", function(self,delta) PetBattlePlanner_OnMouseWheel(self, delta) end );
       item:SetMinMaxValues(1, 5)
       item:SetValueStep(1.0)
-      item:SetValue(1)
-
-
-
-
---               <Scripts>
---                   <OnLoad>
---                      self:SetMinMaxValues(1, 20)
---                      self:SetValueStep(1.0)
---                      self:SetValue(1)
---                   </OnLoad>
---                 </Scripts>
---                 <ThumbTexture name="$parentThumbTexture"
---                                   file="Interface\Buttons\UI-ScrollBar-Knob">
---                   <Size x="25" y="25"/>
---                 </ThumbTexture>
-      
-      
+      item:SetValue(1)      
    end
+   
+   --
+   -- set up team selection
+   --
+   do
+      PetBattlePlanner_TeamNamesFrame = {};
+      PetBattlePlanner_EnemyTeamNamesFrame = {};
+      PetBattlePlanner_EnemyTeamNamesFrameButton = {};
+      
+      local teamSlotIndex;
+      for teamSlotIndex=1,3 do 
+         
+         do
+            local item = PetBattlePlanner_TabPage1:CreateFontString("PetBattlePlanner_EnemyTeamNamesFrame"..teamSlotIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(200);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_OpponentChooserHeader", "TOPLEFT", 20,-435-18*(teamSlotIndex-1));
+            item:SetText(string.format("%s%d %s%s",yellow,25,  RARITY_COLOR[6],"Enemy Pet "..teamSlotIndex.." Name"));
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_EnemyTeamNamesFrame[teamSlotIndex] = item;
+
+            local myButton = CreateFrame("Button", "PetBattlePlanner_EnemyTeamNamesFrameButton"..teamSlotIndex, PetBattlePlanner_TabPage1 )
+            myButton:SetFontString( item )
+            myButton:SetWidth(200);
+            myButton:SetHeight(18);
+            myButton:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamNamesFrame[teamSlotIndex], "TOPLEFT", 0,0);
+            myButton:SetScript("OnEnter",
+                     function(this)
+                        GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                        local petName = this:GetText();
+                        if (petName == nil) then
+                           petName = "unknown Name";
+                        end
+                        GameTooltip:SetText("Click to set "..petName.." as the pet for comparison");
+                        GameTooltip:Show()
+                     end)
+            myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+            myButton:SetScript("OnClick", function(self,button,down)
+                  local petName = self:GetText();
+                  if ( petName ~= nil ) then
+                     local index
+                     for index=1,3 do 
+                        if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[index] ~= nil ) and
+                           ( string.find( petName, PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[index].Name ) ) then
+                           PetBattlePlanner_SetOpponentPetIndex(index);
+                           break;
+                        end
+                     end
+                  end
+               end)
+            PetBattlePlanner_EnemyTeamNamesFrameButton[teamSlotIndex] = myButton;
+
+
+         end
+
+         do
+            local item = PetBattlePlanner_TabPage1:CreateFontString("PetBattlePlanner_TeamNamesFrame"..teamSlotIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(200);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamNamesFrame[teamSlotIndex], "TOPRIGHT", 10,0);
+            item:SetText(string.format("%s%d %s%s",yellow,25,  RARITY_COLOR[3],"Pet "..teamSlotIndex.." Name"));
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_TeamNamesFrame[teamSlotIndex] = item;
+         end
+         
+      end
+   end
+   
+   --
+   -- Set up team selection button
+   --
+   do
+      local myButton = CreateFrame("Button", "PetBattlePlanner_TeamNamesFrameButton", PetBattlePlanner_TabPage1 )
+--      myButton:SetFontString( item )
+      myButton:SetWidth(200);
+      myButton:SetHeight(18*3);
+      myButton:SetPoint("TOPLEFT", PetBattlePlanner_TeamNamesFrame[1], "TOPLEFT", 0,0);
+      myButton:SetScript("OnEnter",
+               function(this)
+                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                  GameTooltip:SetText("Click to set this team.");
+                  GameTooltip:Show()
+               end)
+      myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      myButton:SetScript("OnClick", function(self,button,down)
+         PetBattlePlanner_SetCurrentTeam();
+         end)
+      PetBattlePlanner_TeamNamesFrameButton = myButton;
+   end
+   
+   
+   
    
 end
 
