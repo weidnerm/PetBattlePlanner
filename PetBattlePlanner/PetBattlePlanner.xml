@@ -1,0 +1,1217 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/" 
+    http:="//wowprogramming.com/FrameXML/UI.xsd">
+<Script file="PetBattlePlanner.lua"/> 
+
+   <Frame name="PetBattlePlanner" visible="true" parent="UIParent"> 
+      <Scripts> 
+         <OnLoad> 
+            PetBattlePlanner:RegisterEvent("VARIABLES_LOADED"); 
+            
+         </OnLoad> 
+         <OnEvent> 
+            if (event == "VARIABLES_LOADED") then 
+               PetBattlePlanner_OnLoad(); 
+            end 
+         </OnEvent> 
+      </Scripts> 
+   </Frame> 
+   
+   
+   
+
+<!--code to create GUI template frames, to remove delete lines 18 - 243...-->
+   <!--Main Frame-->
+   <Frame name="PetBattlePlanner_MainForm" enableMouse="true" movable="true" hidden="true" parent="PetBattlePlanner">
+      <Size><AbsDimension x="679" y="540" /></Size>
+      <Anchors>
+         <Anchor point="CENTER" relativeTo="UIParent">
+            <Offset><AbsDimension x="0" y="0" /></Offset>
+         </Anchor>
+      </Anchors>
+      <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+         <BackgroundInsets>
+            <AbsInset left="11" right="12" top="12" bottom="11" />
+         </BackgroundInsets>
+         <TileSize><AbsValue val="32" /></TileSize>
+         <EdgeSize><AbsValue val="32" /></EdgeSize>
+      </Backdrop>
+      <Layers>
+         <Layer level="OVERLAY">
+            <Texture name="$parentTitleBorder" hidden="false" file="Interface\DialogFrame\UI-DialogBox-Header">
+               <Size><AbsDimension x="160" y="32" /></Size>
+               <Anchors>
+                  <Anchor point="TOP">
+                     <Offset><AbsDimension x="0" y="5" /></Offset>
+                  </Anchor>
+               </Anchors>
+               <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+            </Texture>
+            <FontString name="$parentTitleString" hidden="true" font="Fonts\FRIZQT__.TTF">
+               <Size><AbsDimension x="140" y="0" /></Size>
+               <Anchors>
+                  <Anchor point="TOP"><Offset><AbsDimension x="0" y="-4" /></Offset></Anchor>
+               </Anchors>
+               <FontHeight><AbsValue val="12" /></FontHeight>
+               <Color r="1" g="0.8196079" b="0" />
+               <Shadow>
+                  <Color r="0" g="0" b="0" />
+                  <Offset>
+                     <AbsDimension x="1" y="-1" />
+                  </Offset>
+               </Shadow>
+            </FontString>
+         </Layer>
+         
+         <!--Headers-->
+         <Layer level="OVERLAY">
+            <FontString name="$parentTitle" inherits="GameFontNormal" text="PetBattlePlanner">
+               <Anchors>
+                  <Anchor point="TOP"><Offset><AbsDimension x="0" y="-5"/></Offset></Anchor>
+               </Anchors>
+            </FontString>
+         </Layer>
+      </Layers>
+         
+      
+<!--***** start tabbed window code *****-->         
+      <Frames>
+<!--tab 1 frame-->
+         <Frame name="PetBattlePlanner_TabPage1" hidden="false">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+               <Anchor point="BOTTOMRIGHT"/>
+            </Anchors>
+            <Layers>
+               <Layer level="OVERLAY">
+                   <FontString name="$parent_RaidIdPrefix" inherits="GameFontNormal" text="Raid: ">
+                       <Anchors>
+                           <Anchor point="TOPLEFT" relativeTo="$parent">
+                               <Offset>
+                                   <AbsDimension x="20" y="-40"/>
+                               </Offset>
+                           </Anchor>
+                       </Anchors>
+                   </FontString>
+                   <FontString name="$parent_RaidIdText" inherits="GameFontNormal" text="raid title">
+                      <Anchors>                                                                                          
+                         <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_RaidIdPrefix"/>    
+                      </Anchors>                                                                                         
+                   </FontString>
+               </Layer>
+            </Layers>
+       <!--Background Frame-->
+            <Frames>               
+
+               <Frame name="$parentGroupFrame">
+                  <Size><AbsDimension x="640" y="420" /></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                           <AbsDimension x="20" y="-55"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+                     <BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+                     <TileSize><AbsValue val="16" /></TileSize>
+                     <EdgeSize><AbsValue val="16" /></EdgeSize>
+                  </Backdrop>
+               </Frame>   
+       <!--end Background Frame-->
+
+       <!-- Text Frame-->
+               <Frame name="$parent_SampleTextTab1">
+                  <Size>
+                     <AbsDimension x="500" y="400" />
+                  </Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativeTo="$parentGroupFrame">
+                        <Offset>
+                           <AbsDimension x="10" y="-16" />
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="OVERLAY">
+                     </Layer>
+                  </Layers>
+               </Frame>
+               <Slider name="PetBattlePlanner_VSlider" orientation="VERTICAL">
+                 <Size>
+                   <AbsDimension x="25" y="360"/>
+                 </Size>
+                 <Backdrop edgefile="Interface\Buttons\UI-SliderBar-Border"
+                     bgFile="Interface\Buttons\UI-SliderBar-Background" tile="true">
+                   <EdgeSize>
+                       <AbsValue val="8"/>
+                   </EdgeSize>
+                   <TileSize>
+                       <AbsValue val="8"/>
+                   </TileSize>
+                   <BackgroundInsets>
+                       <AbsInset left="3" right="3" top="6" bottom="6"/>
+                   </BackgroundInsets>
+                 </Backdrop>
+                 <Scripts>
+                   <OnLoad>
+                      self:SetMinMaxValues(1, 20)
+                      self:SetValueStep(1.0)
+                      self:SetValue(1)
+                   </OnLoad>
+                 </Scripts>
+                 <ThumbTexture name="$parentThumbTexture"
+                                   file="Interface\Buttons\UI-ScrollBar-Knob">
+                   <Size x="25" y="25"/>
+                 </ThumbTexture>
+               </Slider>
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_GroupedStateHeaderButton" text=" ">                                              
+                 <Size> <AbsDimension x="50" y="18"/>  </Size>                                                                  
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_GroupedStateHeader();                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_OnlineStateHeaderButton" text=" ">                                              
+                 <Size> <AbsDimension x="50" y="18"/>  </Size>                                                                  
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_OnlineStateHeader();                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatusHeaderButton" text=" ">                                              
+                 <Size> <AbsDimension x="75" y="18"/>  </Size>                                                                  
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_InviteStatusHeader();                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_PlayerNameHeaderButton" text=" ">                                              
+                 <Size> <AbsDimension x="100" y="18"/>  </Size>                                                                  
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_PlayerNameHeader();                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_ClassHeaderButton" text=" ">                                              
+                 <Size> <AbsDimension x="75" y="18"/>  </Size>                                                                  
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_ClassHeader();                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_FetchCalendarButton" inherits="UIPanelButtonTemplate" text="Fetch Cal">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleFetchCalButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_ClearAllRolesButton" inherits="UIPanelButtonTemplate" text="Reset">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  relativeTo="PetBattlePlanner_FetchCalendarButton">
+                         <Offset>
+                             <AbsDimension x="0" y="-3"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleClearAllRolesButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               
+               <Button name="PetBattlePlanner_SendAnnouncementButton" inherits="UIPanelButtonTemplate" text="Announce">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_FetchCalendarButton">
+                         <Offset>
+                             <AbsDimension x="10" y="0"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleSendRaidAnnouncementButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_SendInvitesButton" inherits="UIPanelButtonTemplate" text="Invite">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_SendAnnouncementButton">
+                         <Offset>
+                             <AbsDimension x="10" y="0"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleSendInvitesButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_SendInvDoneMsgButton" inherits="UIPanelButtonTemplate" text="Ann Invites">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_SendInvitesButton">
+                         <Offset>
+                             <AbsDimension x="10" y="0"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleAnnounceInvitesDoneButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_SendRolesButton" inherits="UIPanelButtonTemplate" text="Ann. Roles">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_SendInvDoneMsgButton">
+                         <Offset>
+                             <AbsDimension x="10" y="0"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_HandleSendRolesToRaidButton();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_ButtonRefresh" inherits="UIPanelButtonTemplate" text="Refresh">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_SendRolesButton">
+                         <Offset>
+                             <AbsDimension x="30" y="0"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        GuildRoster();
+                     </OnClick>
+                  </Scripts>
+               </Button>
+
+
+
+
+
+
+
+
+
+
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_0" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(0);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_0" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(0);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_0" text=" ">                                              
+                <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(0);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_1" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(1);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_1" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(1);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_1" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(1);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_2" text=" ">                                              
+                <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(2);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_2" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(2);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_2" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(2);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_3" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(3);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_3" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(3);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_3" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(3);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_4" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(4);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_4" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(4);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_4" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(4);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_5" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(5);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_5" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(5);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_5" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(5);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_6" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(6);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_6" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(6);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_6" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(6);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_7" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(7);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_7" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(7);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_7" text=" ">                                              
+               <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(7);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_8" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(8);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_8" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(8);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_8" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(8);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_9" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(9);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_9" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(9);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_9" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(9);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_10" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(10);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_10" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(10);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_10" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(10);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_11" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(11);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_11" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(11);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_11" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(11);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_12" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(12);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_12" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(12);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_12" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(12);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_13" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(13);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_13" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(13);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_13" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(13);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_14" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(14);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_14" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(14);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_14" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(14);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_15" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(15);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_15" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(15);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_15" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(15);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_16" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(16);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_16" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(16);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_16" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(16);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_17" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(17);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_17" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(17);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_17" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(17);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_18" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(18);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_18" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(18);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_18" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(18);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_19" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(19);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_19" text=" ">                                              
+                <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(19);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_19" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(19);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_20" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_TankFlag(20);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_20" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_HealFlag(20);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_20" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_mDpsFlag(20);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_21" text=" ">                                              
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_21" text=" ">                                              
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_21" text=" ">                                              
+               </Button>                                                                                                            
+
+
+
+
+
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_0" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(0);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_1" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(1);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_2" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(2);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_3" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(3);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_4" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(4);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_5" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(5);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_6" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(6);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_7" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(7);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_8" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(8);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_9" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(9);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_10" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(10);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_11" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(11);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_12" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(12);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_13" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(13);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_14" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(14);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_15" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(15);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_16" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(16);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_17" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(17);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_18" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(18);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_19" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(19);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_20" text=" ">                                              
+                 <Scripts>                                                                                                          
+                   <OnClick>                                                                                                        
+                     PetBattlePlanner_ClickHandler_rDpsFlag(20);                                                                           
+                   </OnClick>                                                                                                       
+                 </Scripts>                                                                                                         
+               </Button>                                                                                                            
+               <Button name="PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_21" text=" ">                                              
+               </Button>                                                                                                            
+
+  
+  
+  
+  
+
+
+              <!-- end Text Frame-->
+            </Frames>               
+                  
+         </Frame>   
+<!--end first tab frame-->
+
+<!--tab 2-->         
+         <Frame name="PetBattlePlanner_TabPage2" hidden="true">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+               <Anchor point="BOTTOMRIGHT"/>
+            </Anchors>
+            <Layers>
+               <Layer level="OVERLAY">
+                  <FontString inherits="GameFontNormal" text="Player Loot Logs">
+                     <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent">
+                           <Offset>
+                              <AbsDimension x="20" y="-40"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+               </Layer>
+            </Layers>
+       <!--Background Frame-->
+            <Frames>               
+               <Frame name="PetBattlePlanner_GroupLootFrame">
+                  <Size><AbsDimension x="570" y="210" /></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                           <AbsDimension x="20" y="-55"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+                     <BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+                     <TileSize><AbsValue val="16" /></TileSize>
+                     <EdgeSize><AbsValue val="16" /></EdgeSize>
+                  </Backdrop>
+               </Frame>   
+               <Frame name="PetBattlePlanner_GroupRollFrame">
+                  <Size><AbsDimension x="360" y="210" /></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                           <AbsDimension x="20" y="-300"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+                     <BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+                     <TileSize><AbsValue val="16" /></TileSize>
+                     <EdgeSize><AbsValue val="16" /></EdgeSize>
+                  </Backdrop>
+               </Frame>   
+               <Button name="PetBattlePlanner_RollResetButton4" inherits="UIPanelButtonTemplate" text="4 mins">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_GroupRollFrame">
+                         <Offset>
+                             <AbsDimension x="20" y="-10"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_ResetRolls(240);
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_RollResetButton3" inherits="UIPanelButtonTemplate" text="3 mins">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  relativeTo="PetBattlePlanner_RollResetButton4">
+                         <Offset>
+                             <AbsDimension x="0" y="-10"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_ResetRolls(180);
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_RollResetButton2" inherits="UIPanelButtonTemplate" text="2 mins">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  relativeTo="PetBattlePlanner_RollResetButton3">
+                         <Offset>
+                             <AbsDimension x="0" y="-10"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_ResetRolls(120);
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_RollResetButton1" inherits="UIPanelButtonTemplate" text="1 min">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  relativeTo="PetBattlePlanner_RollResetButton2">
+                         <Offset>
+                             <AbsDimension x="0" y="-10"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_ResetRolls(60);
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="PetBattlePlanner_RollResetButton" inherits="UIPanelButtonTemplate" text="Reset">
+                  <Size><AbsDimension x="80" y="22"/></Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"  relativeTo="PetBattlePlanner_RollResetButton1">
+                         <Offset>
+                             <AbsDimension x="0" y="-10"/>
+                         </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        PetBattlePlanner_ResetRolls(0);
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Slider name="PetBattlePlanner_LootLog_Slider" orientation="VERTICAL">
+                  <Size>
+                     <AbsDimension x="25" y="180"/>
+                  </Size>
+                  <Backdrop edgefile="Interface\Buttons\UI-SliderBar-Border"
+                     bgFile="Interface\Buttons\UI-SliderBar-Background" tile="true">
+                     <EdgeSize>
+                        <AbsValue val="8"/>
+                     </EdgeSize>
+                     <TileSize>
+                        <AbsValue val="8"/>
+                     </TileSize>
+                     <BackgroundInsets>
+                        <AbsInset left="3" right="3" top="6" bottom="6"/>
+                     </BackgroundInsets>
+                  </Backdrop>
+                  <Scripts>
+                     <OnLoad>
+                        self:SetMinMaxValues(1, 1)
+                        self:SetValueStep(1.0)
+                        self:SetValue(1)
+                     </OnLoad>
+                  </Scripts>
+                  <ThumbTexture name="$parentThumbTexture"
+                     file="Interface\Buttons\UI-ScrollBar-Knob">
+                     <Size x="25" y="25"/>
+                  </ThumbTexture>
+               </Slider>
+               <Slider name="PetBattlePlanner_RollLog_Slider" orientation="VERTICAL">
+                 <Size>
+                   <AbsDimension x="25" y="180"/>
+                 </Size>
+                 <Anchors>
+                     <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="PetBattlePlanner_LogTab_Loot_RollAges1"/>
+                   </Anchors>
+                   <Backdrop edgefile="Interface\Buttons\UI-SliderBar-Border"
+                       bgFile="Interface\Buttons\UI-SliderBar-Background" tile="true">
+                     <EdgeSize>
+                         <AbsValue val="8"/>
+                     </EdgeSize>
+                     <TileSize>
+                         <AbsValue val="8"/>
+                     </TileSize>
+                     <BackgroundInsets>
+                         <AbsInset left="3" right="3" top="6" bottom="6"/>
+                     </BackgroundInsets>
+                   </Backdrop>
+                   <Scripts>
+                     <OnLoad>
+                         self:SetMinMaxValues(1, 1)
+                         self:SetValueStep(1.0)
+                         self:SetValue(1)
+                     </OnLoad>
+                   </Scripts>
+                   <ThumbTexture name="$parentThumbTexture"
+                                     file="Interface\Buttons\UI-ScrollBar-Knob">
+                     <Size x="25" y="25"/>
+                   </ThumbTexture>
+               </Slider>
+
+            </Frames>   
+       <!--end Background Frame-->
+            
+            <Layers>
+               <Layer level="OVERLAY">
+                  <FontString inherits="GameFontNormal" text="Roll Logs">
+                     <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent">
+                           <Offset>
+                              <AbsDimension x="20" y="-280"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+               </Layer>
+            </Layers>
+       <!--Background Frame-->
+       <!--end Background Frame-->
+            
+            </Frame>
+<!--end second tab frame-->
+
+<!--end tab frames-->
+         
+           
+<!--tab buttons-->           
+           <Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Raid Planner">
+               <Anchors>
+                   <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                       <Offset>
+                           <AbsDimension x="60" y="-8"/>
+                       </Offset>
+                   </Anchor>
+               </Anchors>
+               <Scripts>
+                   <OnClick>
+                       PanelTemplates_SetTab(PetBattlePlanner_MainForm, 1);
+                       PetBattlePlanner_TabPage1:Show();
+                       PetBattlePlanner_TabPage2:Hide();
+                   </OnClick>
+               </Scripts>
+           </Button>
+ 
+           <Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Logs">
+               <Anchors>
+                   <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+                       <Offset>
+                           <AbsDimension x="-16" y="0"/>
+                       </Offset>
+                   </Anchor>
+               </Anchors>
+               <Scripts>
+                   <OnClick>
+                       PanelTemplates_SetTab(PetBattlePlanner_MainForm, 2);
+                       PetBattlePlanner_TabPage1:Hide();
+                       PetBattlePlanner_TabPage2:Show();
+                   </OnClick>
+               </Scripts>
+           </Button>
+<!--***** end tabbed window code *****-->   
+          
+         <!--Save and Close Text Button-->
+         <Button name="$parentButtonClose" inherits="UIPanelCloseButton">
+            <Size><AbsDimension x="20" y="20"/></Size>
+            <Anchors>
+               <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"  relativeTo="PetBattlePlanner_MainForm">
+                   <Offset>
+                       <AbsDimension x="-5" y="-5"/>
+                   </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnClick>
+                  PetBattlePlanner_MainForm:Hide();
+               </OnClick>
+            </Scripts>
+         </Button>
+      </Frames>
+      
+      <Scripts>
+         <OnLoad>
+            PetBattlePlanner_MainForm:RegisterForDrag("LeftButton");
+            tinsert(UISpecialFrames,"PetBattlePlanner_MainForm");
+            PetBattlePlanner_MainForm.elapsed = 0;
+            PanelTemplates_SetNumTabs(PetBattlePlanner_MainForm, 2);
+            PanelTemplates_SetTab(PetBattlePlanner_MainForm, 1);
+           </OnLoad>
+         <OnShow>
+            PlaySound("UChatScrollButton");
+            PanelTemplates_SetTab(PetBattlePlanner_MainForm, 1);
+            PetBattlePlanner_TabPage1:Show();
+            PetBattlePlanner_TabPage2:Hide();
+         </OnShow>
+         <OnDragStart>PetBattlePlanner_MainForm:StartMoving();PetBattlePlanner_MainForm.isMoving = true;</OnDragStart>
+         <OnDragStop>PetBattlePlanner_MainForm:StopMovingOrSizing();PetBattlePlanner_MainForm.isMoving = false;</OnDragStop>
+      </Scripts>
+
+   </Frame>
+   
+</Ui>

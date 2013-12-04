@@ -1,0 +1,10 @@
+## Interface: 50300
+## X-Min-Interface: 50000
+## Title: PetBattlePlanner
+## Version: 0.0.1
+## Notes: Pet battle planner tool.
+## OptionalDeps:
+## Dependencies:
+## SavedVariables: PetBattlePlanner_db
+PetBattlePlanner.xml
+PetBattlePlanner.lua
