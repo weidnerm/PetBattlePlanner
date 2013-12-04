@@ -1483,9 +1483,9 @@ function PetBattlePlanner_UpdateGui()
 	            local formattedInfo = string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],myTeamMember.Name );               
 	            
 	            PetBattlePlanner_TeamListPetInfoFrameName[loopIndex]         :SetText(formattedInfo);
-	            PetBattlePlanner_TeamListPetInfoFrameHealthText[loopIndex]   :SetText(health);
-	            PetBattlePlanner_TeamListPetInfoFrameAttackPwrText[loopIndex]:SetText(power);
-	            PetBattlePlanner_TeamListPetInfoFrameHasteText[loopIndex]    :SetText(speed);
+	            PetBattlePlanner_TeamListPetInfoFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, health) );
+	            PetBattlePlanner_TeamListPetInfoFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, power) );
+	            PetBattlePlanner_TeamListPetInfoFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, speed) );
 	            PetBattlePlanner_TeamListPetPortraitFrameTexture[loopIndex]  :SetTexture(icon)
 	            PetBattlePlanner_TeamListPetPortraitFrame[loopIndex]  :Show();
 	            PetBattlePlanner_TeamListPetInfoFrameTypeIcon[loopIndex]     :SetTexture(PET_TYPE_TEXTURES[petType])
@@ -1537,9 +1537,9 @@ function PetBattlePlanner_UpdateGui()
 	            local formattedInfo = string.format("%s%d %s%s",yellow,enemyTeamMember.Level,  RARITY_COLOR[enemyTeamMember.Rarity],enemyTeamMember.Name );               
 	            
 	            PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[loopIndex]         :SetText(formattedInfo);
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[loopIndex]   :SetText(enemyTeamMember.Health);
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText[loopIndex]:SetText(enemyTeamMember.Power);
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText[loopIndex]    :SetText(enemyTeamMember.Speed);
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, enemyTeamMember.Health) );
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, enemyTeamMember.Power) );
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, enemyTeamMember.Speed) );
 	            PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture[loopIndex]       :SetTexture(enemyTeamMember.Icon)
 	            PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[loopIndex]         :Show();
 	            PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon[loopIndex]      :SetTexture(PET_TYPE_TEXTURES[enemyTeamMember.PetType])
@@ -2828,12 +2828,6 @@ function PetBattlePlanner_SetUpGuiFields()
       item:SetOrientation("VERTICAL");
       item:SetPoint("TOPLEFT", PetBattlePlanner_PetInfoFrameHealthText[1], "TOPRIGHT", 5,0);
       item:SetBackdrop(backdrop);
---      item:SetScript("OnLoad",
---               function(self)
---                      self:SetMinMaxValues(1, 5)
---                      self:SetValueStep(1.0)
---                      self:SetValue(1)
---               end)
       local texture = item:CreateTexture("PetBattlePlanner_PetInfoFrameSliderTexture");
       texture:SetTexture("Interface\\Buttons\\UI-ScrollBar-Knob");
       texture:SetWidth(25);
@@ -2957,48 +2951,89 @@ function PetBattlePlanner_SetUpGuiFields()
 
 
 
-  PetBattlePlanner_TeamListPetPortraitFrame = {};
-  PetBattlePlanner_TeamListPetPortraitFrameTexture = {};
-  PetBattlePlanner_TeamListPetInfoFrameName = {};
-  PetBattlePlanner_TeamListPetInfoFrameName = {};
-  PetBattlePlanner_TeamListPetInfoFrameHealthIcon = {};
-  PetBattlePlanner_TeamListPetInfoFrameHealthText = {};
-  PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon = {};
-  PetBattlePlanner_TeamListPetInfoFrameAttackPwrText = {};
-  PetBattlePlanner_TeamListPetInfoFrameHasteIcon = {};
-  PetBattlePlanner_TeamListPetInfoFrameHasteText = {};
-  PetBattlePlanner_TeamListPetInfoFrameAbilityFrame = {};
-  PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton = {};
-  PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame = {};
-  PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame = {};
-  PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthTexture = {};
-  PetBattlePlanner_TeamListPetInfoFrameTypeIcon = {};
-  PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame = {};
-  PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture = {};
-  PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon = {};
-  PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeTexture = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthTexture = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon = {};
-  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText = {};
+   PetBattlePlanner_TeamListPetPortraitFrame = {};
+   PetBattlePlanner_TeamListPetPortraitFrameTexture = {};
+   PetBattlePlanner_TeamListPetInfoFrameName = {};
+   PetBattlePlanner_TeamListPetInfoFrameName = {};
+   PetBattlePlanner_TeamListPetInfoFrameHealthIcon = {};
+   PetBattlePlanner_TeamListPetInfoFrameHealthText = {};
+   PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon = {};
+   PetBattlePlanner_TeamListPetInfoFrameAttackPwrText = {};
+   PetBattlePlanner_TeamListPetInfoFrameHasteIcon = {};
+   PetBattlePlanner_TeamListPetInfoFrameHasteText = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilityFrame = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthTexture = {};
+   PetBattlePlanner_TeamListPetInfoFrameTypeIcon = {};
+   PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame = {};
+   PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture = {};
+   PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon = {};
+   PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeTexture = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthTexture = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon = {};
+   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText = {};
          
          
              
                        
-   --
-   -- Set up team Summary
-   --  
+    --
+    -- Set up team Summary
+    --  
    
-  do
+   do
+      do
+         local backdrop = {
+            bgFile = "Interface/DialogFrame/UI-DialogBox-Background",  
+            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+            tile = true,
+            tileSize = 16,
+            edgeSize = 16,
+            insets = {
+               left = 5,
+               right = 5,
+               top = 5,
+               bottom = 5
+            }
+         }
+         
+         local item = CreateFrame("Frame", "PetBattlePlanner_TeamListBackdrop", PetBattlePlanner_TabPage1_SampleTextTab1 )
+         item:SetWidth(640)
+         item:SetHeight(210)
+         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1GroupFrame, "BOTTOMLEFT", 0,-2)
+         item:SetBackdrop(backdrop);
+--         local texture = item:CreateTexture("PetBattlePlanner_TeamListBackdropTexture")
+--         texture:SetAllPoints()
+--         texture:SetTexture("Interface\\PetBattles\\DeadPetIcon")
+      end
+  
+--                 <Frame name="$parentGroupFrame">
+--                  <Size><AbsDimension x="640" y="420" /></Size>
+--                  <Anchors>
+--                     <Anchor point="TOPLEFT" relativeTo="$parent">
+--                        <Offset>
+--                           <AbsDimension x="20" y="-55"/>
+--                        </Offset>
+--                     </Anchor>
+--                  </Anchors>
+--                  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+--                     <BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+--                     <TileSize><AbsValue val="16" /></TileSize>
+--                     <EdgeSize><AbsValue val="16" /></EdgeSize>
+--                  </Backdrop>
+--               </Frame> 
+   
       local frameIndex;
       for frameIndex = 1,3 do
          
