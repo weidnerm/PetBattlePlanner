@@ -1979,10 +1979,10 @@ function PetBattlePlanner_SetUpGuiFields()
       end
    end
       
-      --
-      -- Set up Enemy information
-      --
-      
+	--
+	-- Set up Enemy information
+	--
+
    do         
       --
       -- set up Enemy name fontstring
@@ -2273,7 +2273,7 @@ function PetBattlePlanner_SetUpGuiFields()
             local item = PetBattlePlanner_TabPage1:CreateFontString("PetBattlePlanner_EnemyTeamNamesFrame"..teamSlotIndex, "OVERLAY", "GameFontNormalSmall" )
             item:SetWidth(200);
             item:SetHeight(18);
-            item:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_OpponentChooserHeader", "TOPLEFT", 20,-435-18*(teamSlotIndex-1));
+            item:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_OpponentChooserHeader", "TOPLEFT", -200+20,65-435-18*(teamSlotIndex-1));
             item:SetText(string.format("%s%d %s%s",yellow,25,  RARITY_COLOR[6],"Enemy Pet "..teamSlotIndex.." Name"));
             item:SetJustifyH("LEFT");
             local filename, fontHeight, flags = item:GetFont();
@@ -2359,6 +2359,515 @@ function PetBattlePlanner_SetUpGuiFields()
       PetBattlePlannerPrimaryAbilityTooltip = item;
    end
 
+
+
+	PetBattlePlanner_TeamListPetPortraitFrame = {};
+	PetBattlePlanner_TeamListPetPortraitFrameTexture = {};
+	PetBattlePlanner_TeamListPetInfoFrameName = {};
+	PetBattlePlanner_TeamListPetInfoFrameName = {};
+	PetBattlePlanner_TeamListPetInfoFrameHealthIcon = {};
+	PetBattlePlanner_TeamListPetInfoFrameHealthText = {};
+	PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon = {};
+	PetBattlePlanner_TeamListPetInfoFrameAttackPwrText = {};
+	PetBattlePlanner_TeamListPetInfoFrameHasteIcon = {};
+	PetBattlePlanner_TeamListPetInfoFrameHasteText = {};
+	PetBattlePlanner_TeamListPetInfoFrameAbilityFrame = {};
+	PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton = {};
+	PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame = {};
+	PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame = {};
+	PetBattlePlanner_TeamListPetInfoFrameTypeIcon = {};
+	PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame = {};
+	PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon = {};
+	PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText = {};
+         
+         
+             
+	                     
+   --
+   -- Set up team Summary
+   --  
+   
+	do
+      local frameIndex;
+      for frameIndex = 1,3 do
+         
+         --
+         -- set up character portrait frame
+         --
+         
+         do
+            
+            local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetPortraitFrame"..frameIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+            item:SetWidth(50)
+            item:SetHeight(50)
+            item:SetPoint("TOPLEFT", PetBattlePlanner_CountMatrixTitle, "TOPLEFT", 0,-420-65*(frameIndex-1))
+            local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+            texture:SetAllPoints()
+            texture:SetTexture("Interface\\PetBattles\\DeadPetIcon")
+--            texture:SetTexture("Interface\\PetBattles\\PetIcon-Magical")
+--            texture:SetTexCoord(0.5,0.8,0.5,0.65)
+            PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] = item;
+            PetBattlePlanner_TeamListPetPortraitFrameTexture[frameIndex] = texture;
+
+--            local myButton = CreateFrame("Button", "PetBattlePlanner_PetPortraitFrameButton"..frameIndex, PetBattlePlanner_PetPortraitFrame[frameIndex] )
+--            myButton:SetWidth(50);
+--            myButton:SetHeight(50);
+--            myButton:SetPoint("TOPLEFT", PetBattlePlanner_PetPortraitFrameTexture[frameIndex], "TOPLEFT", 0,0);
+--            myButton:SetScript("OnEnter",
+--                     function(this)
+--                        GameTooltip_SetDefaultAnchor(GameTooltip, this)
+--                        GameTooltip:SetText("Choose your opponent Pet to be compared with the enemy pet.");
+--                        GameTooltip:Show()
+--                     end)
+--            myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+--            myButton:RegisterForClicks( "LeftButtonUp","RightButtonUp" );
+--            myButton:SetScript("OnClick", function(self,button,down)
+--                  if ( button == "LeftButton" ) then
+--                     PetBattlePlanner_SetSelectedPetClickHandler(frameIndex-1);
+--                  elseif ( button == "RightButton" ) then                  
+--                     EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_PetPortraitFrameButton"..frameIndex ,0,0, nil, 10)
+--                  end
+--               end)
+--            PetBattlePlanner_PetPortraitFrameButton[frameIndex] = myButton;
+
+
+         end
+
+         --
+         -- set up character name fontstring
+         --
+         do
+            local item = PetBattlePlanner_TeamListPetPortraitFrame[frameIndex]:CreateFontString("PetBattlePlanner_TeamListPetInfoFrameName"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(265);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetPortraitFrameTexture[frameIndex], "TOPRIGHT", 2,0);
+            item:SetText(yellow.."25"..blue.." Pet Name");
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_TeamListPetInfoFrameName[frameIndex] = item;
+         end
+         
+         --
+         -- set up health icon
+         --
+         do
+            local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameHealthIcon"..frameIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+            item:SetWidth(18)
+            item:SetHeight(18)
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameName[frameIndex], "TOPRIGHT", 2,0)
+            local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+            texture:SetAllPoints()
+            texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+            texture:SetTexCoord(0.5, 1 ,0.5, 1)
+            PetBattlePlanner_TeamListPetInfoFrameHealthIcon[frameIndex] = texture;
+         end
+         
+         --
+         -- set up Health FontString
+         --
+         do
+            local item = PetBattlePlanner_TeamListPetPortraitFrame[frameIndex]:CreateFontString("PetBattlePlanner_TeamListPetInfoFrameHealthText"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(40);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameHealthIcon[frameIndex], "TOPRIGHT", 2,0);
+            item:SetText(white.."1234");
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_TeamListPetInfoFrameHealthText[frameIndex] = item;
+         end
+
+         --
+         -- set up Attack power icon
+         --
+         do
+            local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon"..frameIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+            item:SetWidth(18)
+            item:SetHeight(18)
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameHealthIcon[frameIndex], "BOTTOMLEFT", 0,-2)
+            local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+            texture:SetAllPoints()
+            texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+            texture:SetTexCoord(0, .5 ,0, .5)
+            PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon[frameIndex] = texture;
+         end
+         
+         --
+         -- set up Attack power FontString
+         --
+         do
+            local item = PetBattlePlanner_TeamListPetPortraitFrame[frameIndex]:CreateFontString("PetBattlePlanner_TeamListPetInfoFrameAttackPwrText"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(40);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon[frameIndex], "TOPRIGHT", 2,0);
+            item:SetText(white.."1234");
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_TeamListPetInfoFrameAttackPwrText[frameIndex] = item;
+         end
+         
+         --
+         -- set up Haste icon
+         --
+         do
+            local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameHasteIcon"..frameIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+            item:SetWidth(18)
+            item:SetHeight(18)
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAttackPowerIcon[frameIndex], "BOTTOMLEFT", 0,-2)
+            local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+            texture:SetAllPoints()
+            texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+            texture:SetTexCoord(0, .5 ,0.5, 1)
+            PetBattlePlanner_TeamListPetInfoFrameHasteIcon[frameIndex] = texture;
+         end
+         
+         --
+         -- set up Haste FontString
+         --
+         do
+            local item = PetBattlePlanner_TeamListPetPortraitFrame[frameIndex]:CreateFontString("PetBattlePlanner_TeamListPetInfoFrameHasteText"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(40);
+            item:SetHeight(18);
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameHasteIcon[frameIndex], "TOPRIGHT", 2,0);
+            item:SetText(white.."1234");
+            item:SetJustifyH("LEFT");
+            local filename, fontHeight, flags = item:GetFont();
+            item:SetFont(filename, fontHeight+2, flags);      
+            PetBattlePlanner_TeamListPetInfoFrameHasteText[frameIndex] = item;
+         end
+         
+
+
+         local abilityIndex;
+         PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex] = {};
+         PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton[frameIndex] = {};
+         PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame[frameIndex] = {};
+         PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame[frameIndex] = {};
+			PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame[frameIndex] = {};
+			PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture[frameIndex] = {};
+			PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[frameIndex] = {};
+			PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame[frameIndex] = {};
+			PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame[frameIndex] = {};       
+			  
+         local abilityIconSize = 32
+         
+         local abilityIndex;
+         local extraGap = 0;
+         for abilityIndex = 1,6 do
+            
+            --
+            -- set up Ability Icon
+            --
+            
+            do
+               local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameAbilityFrame"..frameIndex..abilityIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+               item:SetWidth(abilityIconSize)
+               item:SetHeight(abilityIconSize)
+               extraGap = extraGap + 4;
+               if ((abilityIndex==3) or (abilityIndex==5)) then extraGap = extraGap + 15; end
+               item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameName[frameIndex], "BOTTOMLEFT", 2+(abilityIndex-1)*(abilityIconSize)+extraGap,-4)
+               local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+               texture:SetAllPoints()
+               texture:SetTexture("Interface\\ICONS\\INV_Misc_MonsterTail_05")
+               texture:SetTexCoord(0, 1 ,0, 1)
+               PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][abilityIndex] = texture;
+               
+               local myButton = CreateFrame("Button", "PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton"..frameIndex..abilityIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+               myButton:SetWidth(abilityIconSize);
+               myButton:SetHeight(abilityIconSize);
+               myButton:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", 0,0);
+               myButton:SetScript("OnEnter",
+                  function(self)
+   			   		PetBattlePlanner_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText);
+                  end)
+               myButton:SetScript("OnLeave", function() PetBattlePlannerPrimaryAbilityTooltip:Hide() end)
+               PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton[frameIndex][abilityIndex] = myButton;
+               
+            end
+
+            --
+            -- set up Ability Type Icon
+            --
+            
+            do
+               local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame"..frameIndex..abilityIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+               item:SetWidth(20)
+               item:SetHeight(20)
+               item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", -6,6)
+               item:SetFrameLevel( item:GetFrameLevel() +10 );
+               local texture = item:CreateTexture("PetBattlePlanner_TeamListPetPortraitFrameTexture"..frameIndex)
+               texture:SetAllPoints()
+               texture:SetTexture("Interface\\TARGETINGFRAME\\PetBadge-Beast")
+               texture:SetTexCoord(0, 1 ,0, 1)
+               PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame[frameIndex][abilityIndex] = texture;
+            end
+            
+            --
+            -- set up Ability Strength Icon
+            --
+            
+            do
+               local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame"..frameIndex..abilityIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+               item:SetWidth(20)
+               item:SetHeight(20)
+               item:SetPoint("BOTTOMRIGHT", PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][abilityIndex], "BOTTOMRIGHT",6,-4)
+               item:SetFrameLevel( item:GetFrameLevel() +10 );
+               local texture = item:CreateTexture("PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthTexture"..frameIndex)
+               texture:SetAllPoints()
+               texture:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong")
+               texture:SetTexCoord(0, 1 ,0, 1)
+               PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame[frameIndex][abilityIndex] = texture;
+            end
+         end
+         
+         --
+         -- set up Pet Type Icon
+         --
+         do
+            local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameTypeIcon"..frameIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+            item:SetWidth(32)
+            item:SetHeight(32)
+--            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][6], "TOPRIGHT", 15,0)
+            item:SetFrameLevel( item:GetFrameLevel() +10 );
+            item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetPortraitFrameTexture[frameIndex], "TOPLEFT", -12,8)
+            local texture = item:CreateTexture("PetBattlePlanner_TeamListPetInfoFrameTypeIconTexture"..frameIndex)
+            texture:SetAllPoints()
+            texture:SetTexture("Interface\\TARGETINGFRAME\\PetBadge-Elemental")
+            texture:SetTexCoord(0, 1 ,0, 1)
+            PetBattlePlanner_TeamListPetInfoFrameTypeIcon[frameIndex] = texture;
+         end
+         
+--         --
+--         -- set up Selection Box Frame
+--         --
+--         do
+--            local item = CreateFrame("Frame", "PetBattlePlanner_PetInfoFrameSelectionBoxTexture"..frameIndex, PetBattlePlanner_PetPortraitFrame[frameIndex] )
+--            item:SetWidth(400)
+--            item:SetHeight(75)
+--            item:SetFrameLevel( item:GetFrameLevel() +10 );
+--            item:SetPoint("TOPLEFT", PetBattlePlanner_PetPortraitFrameTexture[frameIndex], "TOPLEFT", -12,12)
+--            PetBattlePlanner_PetInfoFrameSelectionBoxFrame[frameIndex] = item;
+--            local texture = item:CreateTexture("PetBattlePlanner_PetInfoFrameTypeIconTexture"..frameIndex)
+--            texture:SetAllPoints()
+--            texture:SetTexture("Interface\\PetBattles\\PetBattleHud")
+--            texture:SetTexCoord(0.5625, 0.7285 ,0.7656, 0.8516)
+--            PetBattlePlanner_PetInfoFrameSelectionBoxTexture[frameIndex] = texture;
+--            item:Hide();
+--         end
+         
+			--
+			-- Set up Enemy information
+			--
+
+
+	      --
+	      -- set up Enemy portrait frame
+	      --
+	      do
+	         local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame", PetBattlePlanner_TabPage1_SampleTextTab1 )
+	         item:SetWidth(50)
+	         item:SetHeight(50)
+	         item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameHealthText[frameIndex], "TOPRIGHT", 15,0);
+	         local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetPortraitEnemyFrameTexture")
+	         texture:SetAllPoints()
+	         texture:SetTexture("Interface\\ICONS\\INV_MISC_BONE_HUMANSKULL_02")
+	--            texture:SetTexCoord(0.5,0.8,0.5,0.65)
+	         PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[frameIndex] = texture;
+	      end
+
+			--
+			-- set up Enemy name fontstring
+			--
+			do
+				local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+				item:SetWidth(125);
+				item:SetHeight(18);
+				item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[frameIndex], "TOPRIGHT", 2,0 )
+				item:SetText(yellow.."25"..orange.." Meanie-Bo-Beanie");
+				item:SetJustifyH("LEFT");
+				local filename, fontHeight, flags = item:GetFont();
+				item:SetFont(filename, fontHeight+2, flags);
+				PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[frameIndex] = item;
+			end
+      
+	      for abilityIndex = 1,3 do
+	         
+	         --
+	         -- set up Ability Icon
+	         --
+	         
+	         do
+	            local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame"..frameIndex..abilityIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+	            item:SetWidth(abilityIconSize)
+	            item:SetHeight(abilityIconSize)
+	            item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[frameIndex], "BOTTOMLEFT", (abilityIndex-1)*(abilityIconSize+6)+3,-2)
+	            local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture"..frameIndex..abilityIndex)
+	            texture:SetAllPoints()
+	            texture:SetTexture("Interface\\ICONS\\INV_Misc_MonsterTail_05")
+	            texture:SetTexCoord(0, 1 ,0, 1)
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame[frameIndex][abilityIndex] = item;
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture[frameIndex][abilityIndex] = texture;
+	
+	            local myButton = CreateFrame("Button", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton"..frameIndex..abilityIndex, PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame[frameIndex][abilityIndex] )
+	            myButton:SetWidth(abilityIconSize);
+	            myButton:SetHeight(abilityIconSize);
+	            myButton:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", 0,0);
+	            myButton:SetScript("OnEnter",
+	               function(self)
+				   		PetBattlePlanner_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText, self.attackPower);
+	               end)
+	            myButton:SetScript("OnLeave", function() PetBattlePlannerPrimaryAbilityTooltip:Hide() end)
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[frameIndex][abilityIndex] = myButton;
+	         end
+	
+	         --
+	         -- set up Ability Type Icon
+	         --
+	         
+	         do
+	            local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame"..frameIndex..abilityIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+	            item:SetWidth(20)
+	            item:SetHeight(20)
+	            item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", -6,6)
+	            item:SetFrameLevel( item:GetFrameLevel() +10 );
+	            local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetPortraitFrameTexture"..frameIndex..abilityIndex)
+	            texture:SetAllPoints()
+	            texture:SetTexture("Interface\\TARGETINGFRAME\\PetBadge-Beast")
+	            texture:SetTexCoord(0, 1 ,0, 1)
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame[frameIndex][abilityIndex] = texture;
+	         end
+	         
+	         --
+	         -- set up Ability Strength Icon
+	         --
+	         
+	         do
+	            local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame"..frameIndex..abilityIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+	            item:SetWidth(20)
+	            item:SetHeight(20)
+	            item:SetPoint("BOTTOMRIGHT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[frameIndex][abilityIndex], "BOTTOMRIGHT",6,-4)
+	            item:SetFrameLevel( item:GetFrameLevel() +10 );
+	            local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrameTexture"..frameIndex..abilityIndex)
+	            texture:SetAllPoints()
+	            texture:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Strong")
+	            texture:SetTexCoord(0, 1 ,0, 1)
+	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame[frameIndex][abilityIndex] = texture;
+	         end
+	      end
+
+	      --
+	      -- set up Enemy health icon
+	      --
+	      do
+	         local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon"..frameIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+	         item:SetWidth(18)
+	         item:SetHeight(18)
+	         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[frameIndex], "TOPRIGHT", 0,0)
+	         local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIconTexture")
+	         texture:SetAllPoints()
+	         texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+	         texture:SetTexCoord(0.5, 1 ,0.5, 1)
+	         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon[frameIndex] = texture;
+	      end
+	      
+	      --
+	      -- set up Enemy Health FontString
+	      --
+	      do
+	         local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+	         item:SetWidth(40);
+	         item:SetHeight(18);
+	         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon[frameIndex], "TOPRIGHT", 2,0);
+	         item:SetText(white.."4321");
+	         item:SetJustifyH("LEFT");
+	         local filename, fontHeight, flags = item:GetFont();
+	         item:SetFont(filename, fontHeight+2, flags);      
+	         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[frameIndex] = item;
+	      end
+	
+      --
+      -- set up Enemy Attack power icon
+      --
+      do
+         local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon"..frameIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+         item:SetWidth(18)
+         item:SetHeight(18)
+         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthIcon[frameIndex], "BOTTOMLEFT", 0,-2)
+         local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIconTexture"..frameIndex)
+         texture:SetAllPoints()
+         texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+         texture:SetTexCoord(0, .5 ,0, .5)
+         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon[frameIndex] = texture;
+      end
+      
+      --
+      -- set up Enemy Attack power FontString
+      --
+      do
+         local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText", "OVERLAY", "GameFontNormalSmall" )
+         item:SetWidth(40);
+         item:SetHeight(18);
+         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon[frameIndex], "TOPRIGHT", 2,0);
+         item:SetText(white.."4321");
+         item:SetJustifyH("LEFT");
+         local filename, fontHeight, flags = item:GetFont();
+         item:SetFont(filename, fontHeight+2, flags);      
+         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText[frameIndex] = item;
+      end
+      
+      --
+      -- set up Enemy Haste icon
+      --
+      do
+         local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon"..frameIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+         item:SetWidth(18)
+         item:SetHeight(18)
+         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon[frameIndex], "BOTTOMLEFT", 0,-2)
+         local texture = item:CreateTexture("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIconTexture"..frameIndex)
+         texture:SetAllPoints()
+         texture:SetTexture("Interface\\PetBattles\\PetBattle-StatIcons")
+         texture:SetTexCoord(0, .5 ,0.5, 1)
+         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon[frameIndex] = texture;
+      end
+      
+      --
+      -- set up Enemy Haste FontString
+      --
+      do
+         local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText"..frameIndex, "OVERLAY", "GameFontNormalSmall" )
+         item:SetWidth(40);
+         item:SetHeight(18);
+         item:SetPoint("TOPLEFT", PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteIcon[frameIndex], "TOPRIGHT", 2,0);
+         item:SetText(white.."4321");
+         item:SetJustifyH("LEFT");
+         local filename, fontHeight, flags = item:GetFont();
+         item:SetFont(filename, fontHeight+2, flags);      
+         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText[frameIndex] = item;
+      end
+         
+         
+         
+         
+         
+
+      end
+   end
+   
+   
+   
+   
    
    
 end

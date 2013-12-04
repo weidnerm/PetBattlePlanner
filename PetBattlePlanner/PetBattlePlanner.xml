@@ -40,7 +40,7 @@
 <!--code to create GUI template frames, to remove delete lines 18 - 243...-->
    <!--Main Frame-->
    <Frame name="PetBattlePlanner_MainForm" enableMouse="true" movable="true" hidden="true" parent="PetBattlePlanner">
-      <Size><AbsDimension x="679" y="540" /></Size>
+      <Size><AbsDimension x="679" y="700" /></Size>
       <Anchors>
          <Anchor point="CENTER" relativeTo="UIParent">
             <Offset><AbsDimension x="0" y="0" /></Offset>
