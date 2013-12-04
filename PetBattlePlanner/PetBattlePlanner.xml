@@ -8,11 +8,27 @@
       <Scripts> 
          <OnLoad> 
             PetBattlePlanner:RegisterEvent("VARIABLES_LOADED"); 
+            PetBattlePlanner:RegisterEvent("PET_BATTLE_CLOSE"); 
+            PetBattlePlanner:RegisterEvent("PET_BATTLE_OPENING_DONE"); 
+            PetBattlePlanner:RegisterEvent("PET_BATTLE_OPENING_START"); 
+            PetBattlePlanner:RegisterEvent("PLAYER_TARGET_CHANGED"); 
+--            PetBattlePlanner:RegisterEvent("UNIT_TARGET"); 
             
          </OnLoad> 
          <OnEvent> 
             if (event == "VARIABLES_LOADED") then 
                PetBattlePlanner_OnLoad(); 
+            elseif (event == "PET_BATTLE_CLOSE") then 
+               PetBattlePlanner_handle_PET_BATTLE_CLOSE(); 
+            elseif (event == "PET_BATTLE_OPENING_DONE") then 
+               PetBattlePlanner_handle_PET_BATTLE_OPENING_DONE(); 
+            elseif (event == "PET_BATTLE_OPENING_START") then 
+               PetBattlePlanner_handle_PET_BATTLE_OPENING_START(); 
+            elseif (event == "PLAYER_TARGET_CHANGED") then 
+               PetBattlePlanner_handle_PLAYER_TARGET_CHANGED(); 
+--            elseif (event == "UNIT_TARGET") then 
+--               PetBattlePlanner_handle_UNIT_TARGET(); 
+            
             end 
          </OnEvent> 
       </Scripts> 

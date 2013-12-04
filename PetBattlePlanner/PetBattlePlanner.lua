@@ -10,7 +10,9 @@ local red    = "|c00FF0000";
 local green  = "|c0000ff00";
 local blue   = "|c000000ff";
 
-
+local PetBattlePlanner_lastTargetName;
+local PET_OWNER_PLAYER = 1;
+local PET_OWNER_OPPONENT = 2;
 
 
 -- ****************************************************
@@ -29,10 +31,12 @@ function PetBattlePlanner_OnLoad()
    end
 --   UIErrorsFrame:AddMessage("PetBattlePlanner Loaded.", 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
 
-   SlashCmdList["PETBATTLEPLANNERCOMMAND"] = PetBattlePlanner_Handler;
+   SlashCmdList["PETBATTLEPLANNERCOMMAND"] = PetBattlePlanner_Slash_Handler;
    SLASH_PETBATTLEPLANNERCOMMAND1 = "/pbp";
 
-
+   if ( PetBattlePlanner_db == nil) then
+      PetBattlePlanner_ResetDB();
+   end
 end
 
 
@@ -46,7 +50,7 @@ end
 -- * useful components: strip/interpret command from slash input, activate GUI window, colorize
 -- * chat text, output text to chat frame, set variable via slash command and report the change in chat
 --
-function PetBattlePlanner_Handler(msg)
+function PetBattlePlanner_Slash_Handler(msg)
    if (msg == "gui") then
       PetBattlePlanner_MainForm:Show();
    elseif (msg == "toggle") then
@@ -62,8 +66,16 @@ function PetBattlePlanner_Handler(msg)
    elseif (msg == "center") then
       PetBattlePlanner_MainForm:ClearAllPoints()
       PetBattlePlanner_MainForm:SetPoint("CENTER", UIParent, "CENTER",0,0)
+   elseif (msg == "reset") then
+      PetBattlePlanner_ResetDB();
    elseif (msg == "test") then
-      print("placeholder...");
+      print("Got to test");
+      local lastTargetName = GetUnitName("target");
+   
+      if ( PetBattlePlanner_lastTargetName ) then
+         PetBattlePlanner_lastTargetName = lastTargetName;
+         print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
+      end
    else
       print(green.."PetBattlePlanner:"..white.." Arguments to "..yellow.."/rm");
       print(yellow.." show - "..white.."Shows the main window.");
@@ -81,15 +93,96 @@ end
 
 
 
+function PetBattlePlanner_handle_PET_BATTLE_CLOSE()
+--   print("Got PET_BATTLE_CLOSE");
+end
 
+function PetBattlePlanner_handle_PET_BATTLE_OPENING_DONE()
+--   print("Got PET_BATTLE_OPENING_DONE");
+end
 
+function PetBattlePlanner_handle_GetLowestRarity()
+   local lowestPetRarity = 1000;
+   local petIndex;
+   local numPets = C_PetBattles.GetNumPets(PET_OWNER_OPPONENT);
+   
+   for petIndex=1, numPets do
+      local rarity = C_PetBattles.GetBreedQuality(PET_OWNER_OPPONENT, petIndex);
+      
+      if ( rarity < lowestPetRarity ) then
+         lowestPetRarity = rarity;
+      end
+   end
+   
+   return lowestPetRarity;
+end
 
+function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
+--   print("Got PET_BATTLE_OPENING_START");
+   
+   if ( (PetBattlePlanner_lastTargetName ~= nil) and                -- we have an opponent name
+        ( C_PetBattles.IsPlayerNPC(PET_OWNER_OPPONENT) ) ) then       -- we have an NPC opponent
+      
+      if ( PetBattlePlanner_db == nil ) then PetBattlePlanner_db = {}; end
+      if ( PetBattlePlanner_db["Opponents"] == nil ) then PetBattlePlanner_db["Opponents"] = {}; end
+      
+      -- determine lowest pet rarity.  we want to only track trainer with good pets.
+      if ( PetBattlePlanner_handle_GetLowestRarity() >= 5 ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
+         local numPets = C_PetBattles.GetNumPets(PET_OWNER_OPPONENT);
 
+         print("Battling "..PetBattlePlanner_lastTargetName);
+         
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName] = {};
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"] = {};
+         
+         
+         local petIndex;
+         for petIndex=1, numPets do
+            local petName, speciesName = C_PetBattles.GetName(PET_OWNER_OPPONENT, petIndex);
+--            local rarity = C_PetBattles.GetBreedQuality(PET_OWNER_OPPONENT, petIndex);
+--            print("pet["..petIndex.."] = "..petName.."   species = "..speciesName.."  rarity="..rarity);
+            
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex] = {};
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex]["Name"] = petName;
+            PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex]["AbilityList"] = {};
 
+            local abilityIndex;
+            for abilityIndex=1, 3 do
+               local id, abilityName, icon, maxCooldown, unparsedDescription, numTurns, petType, noStrongWeakHints = C_PetBattles.GetAbilityInfo(PET_OWNER_OPPONENT, petIndex, abilityIndex);
+   --            print("   ability["..abilityIndex.."] = "..abilityName.."   id = "..id);
+               PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex]["AbilityList"][abilityIndex] = id;
+            end
+         end
+      end
+   end
+end
 
+function PetBattlePlanner_handle_PLAYER_TARGET_CHANGED()
+--   print("Got to PLAYER_TARGET_CHANGED");
+   local lastTargetName = GetUnitName("target");
 
+   if ( lastTargetName ) then
+      PetBattlePlanner_lastTargetName = lastTargetName;
+--      print("PLAYER_TARGET_CHANGED->"..PetBattlePlanner_lastTargetName);
+   end
+end
 
+--function PetBattlePlanner_handle_UNIT_TARGET()
+--   print("Got to UNIT_TARGET");
+--   local lastTargetName = GetUnitName("target");
+--
+--   if ( lastTargetName ) then
+--      PetBattlePlanner_lastTargetName = lastTargetName;
+--      print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
+--   end
+--end
+           
+function PetBattlePlanner_ResetDB()
 
+   PetBattlePlanner_db = {};
+   PetBattlePlanner_db["Opponents"] = {};
+   
+end
 
 
 
