@@ -9,13 +9,19 @@ local white  = "|c00FFFFff";
 local red    = "|c00FF0000";
 local green  = "|c0000ff00";
 local blue   = "|c000000ff";
+local purple = "|c00b048f8";
+local orange = "|c00ff8000";
+
+
 
 local PetBattlePlanner_lastTargetName;
 local PET_OWNER_PLAYER = 1;
 local PET_OWNER_OPPONENT = 2;
 
-local PetBattlePlanner_OpponentName = "none";
-local PetBattlePlanner_OpponentPetIndex = 0;
+local PetBattlePlanner_OpponentName = "Kafi";
+local PetBattlePlanner_OpponentPetIndex = 1;
+local PetBattlePlanner_local_db;
+
 
 local PET_TYPE_TEXT = {
    "Humanoid",    -- 1 
@@ -31,12 +37,12 @@ local PET_TYPE_TEXT = {
 }
 
 local RARITY_TEXT = {
-   "Grey",       -- "Poor",       
-   "White",     -- "Common",     
-   "Green",   -- "Uncommon",   
-   "Blue",       -- "Rare",       
-   "Purple",       -- "Epic",       
-   "Orange"   -- "Legendary"   
+   mediumGrey.."Poor",       -- "Poor",       
+   white.."Common",     -- "Common",     
+   green.."Uncommon",   -- "Uncommon",   
+   blue.."Rare",       -- "Rare",       
+   purple.."Epic",       -- "Epic",       
+   orange.."Legendary"   -- "Legendary"   
 }
    
 
@@ -119,6 +125,7 @@ function PetBattlePlanner_Slash_Handler(msg)
       PetBattlePlanner_ResetDB();
    elseif (msg == "report") then
       PetBattlePlanner_GenerateReport();
+      print("Report generation complete");
    elseif (msg == "test") then
       print("Got to test");
       local lastTargetName = GetUnitName("target");
@@ -276,7 +283,24 @@ function PetBattlePlanner_GetAttackStrength(attackerType, defenderType)
    return strength
 end
 
+function PetBattlePlanner_ResetLocalDB()
+   local rowIndex,colIndex;
+
+   PetBattlePlanner_local_db = {}
+   for colIndex = 1,3 do
+      PetBattlePlanner_local_db[colIndex] = {};
+      
+      for rowIndex = 1,3 do
+         PetBattlePlanner_local_db[colIndex][rowIndex] = {};
+      end
+   end
+   
+end
+
+
 function PetBattlePlanner_GenerateReport()
+   
+   PetBattlePlanner_ResetLocalDB();
    
    PetBattlePlanner_db["Report"] = {};
    
@@ -320,17 +344,17 @@ function PetBattlePlanner_GenerateReport()
       --
       -- defensive
       --
-     
+
       printOut[outputIndex] = "   Defensive info";   outputIndex = outputIndex+1;        outputLine = "";
       
       local abilityIndex
       local worstAttackVsMe = ATTACK_WEAK;
-      local enemyName = "Dos-Ryga"
+      local enemyName = PetBattlePlanner_OpponentName;
       for abilityIndex = 1, 3 do
-         local abilityID = PetBattlePlanner_db["Opponents"][enemyName]["Team"][1]["AbilityList"][abilityIndex];
+         local abilityID = PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["AbilityList"][abilityIndex];
          local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityID)
          
-         outputLine = outputLine.."      "..PetBattlePlanner_db["Opponents"][enemyName]["Team"][1]["Name"]
+         outputLine = outputLine.."      "..PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["Name"]
          outputLine = outputLine.."->"..abilityName.."("..PET_TYPE_TEXT[abilityPetType]..")"
          
          local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, petType);
@@ -350,7 +374,6 @@ function PetBattlePlanner_GenerateReport()
 
       local abilityIndex
       local bestAttackVsHim = ATTACK_WEAK;
-      local enemyName = "Dos-Ryga"
 
 
       local idTable, levelTable = C_PetJournal.GetPetAbilityList(speciesID);
@@ -362,7 +385,7 @@ function PetBattlePlanner_GenerateReport()
             local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityId)
             outputLine = outputLine.."      "..abilityName.."("..PET_TYPE_TEXT[abilityPetType]..")"
    
-            local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, PetBattlePlanner_db["Opponents"][enemyName]["Team"][1]["PetType"]);
+            local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["PetType"]);
             if ( attackResult > bestAttackVsHim ) then
                bestAttackVsHim = attackResult;
             end
@@ -383,19 +406,57 @@ function PetBattlePlanner_GenerateReport()
       --
       
       printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")("..level..")("..RARITY_TEXT[rarity]..")";   outputIndex = outputIndex+1;       outputLine = "";
-      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")";   outputIndex = outputIndex+1;       outputLine = "";
+--      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")";   outputIndex = outputIndex+1;       outputLine = "";
       
 
-
+      PetBattlePlanner_UpdatePetLocalDB(myPetIndex, level ,rarity, owned, canBattle, bestAttackVsHim, worstAttackVsMe)
 
       
    end
+end
+
+function PetBattlePlanner_UpdatePetLocalDB(journalIndex,level,rarity,isOwned,canBattle,bestAttackVsHim,worstAttackVsMe)
+   local toBeIncluded = true;
+   
+   -- create default values if necessary.
+   if PetBattlePlanner_db.Options == nil then
+      PetBattlePlanner_db.Options = {};
+   end
+   if PetBattlePlanner_db.Options.MinPetLevel == nil then
+      PetBattlePlanner_db.Options.MinPetLevel = 1;
+   end
+   if PetBattlePlanner_db.Options.OnlyIncludeCaptured == nil then
+      PetBattlePlanner_db.Options.OnlyIncludeCaptured = false;
+   end
+   if PetBattlePlanner_db.Options.MinRarity == nil then
+      PetBattlePlanner_db.Options.MinRarity = 1; -- grey
+   end
    
    
-   print("Report generation complete");
    
+   if ( canBattle == false ) then
+      toBeIncluded = false;
+      
+   elseif ( level < PetBattlePlanner_db.Options.MinPetLevel ) then
+      toBeIncluded = false;
+      
+   elseif ( rarity < PetBattlePlanner_db.Options.MinRarity ) then
+      toBeIncluded = false;
+      
+--   elseif ( PetBattlePlanner_db.Options.OnlyIncludeCaptured ) and
+--          ( isOwned == false ) then 
+--      toBeIncluded = false;
+   end
+   
+   if ( toBeIncluded == true ) then
+      
+      local numEntriesInSection = #PetBattlePlanner_local_db[bestAttackVsHim][worstAttackVsMe]
+      PetBattlePlanner_local_db[bestAttackVsHim][worstAttackVsMe][numEntriesInSection+1] = journalIndex;
+   end
    
 end
+
+
 
 
 
@@ -447,12 +508,40 @@ function PetBattlePlanner_UpdatePetListMenu()
 end
 
 function PetBattlePlanner_SetOpponentNpcName(opponentName)
-   PetBattlePlanner_OpponentName = opponentName;
+   PetBattlePlanner_OpponentName = opponentName;  
+   PetBattlePlanner_OpponentPetIndex = 1;
    
    PetBattlePlanner_UpdatePetListMenu();
    
+   PetBattlePlanner_GenerateReport(); -- update the grid calculations and create a report
+   
    PetBattlePlanner_UpdateGui();
 end
+
+function PetBattlePlanner_SetMinimumLevel(level)
+   PetBattlePlanner_db.Options.MinPetLevel  = level;
+
+   PetBattlePlanner_GenerateReport(); -- update the grid calculations and create a report
+   
+   PetBattlePlanner_UpdateGui();
+end
+
+function PetBattlePlanner_SetMinimumOwnership(ownership)
+   PetBattlePlanner_db.Options.OnlyIncludeCaptured  = ownership;
+
+   PetBattlePlanner_GenerateReport(); -- update the grid calculations and create a report
+   
+   PetBattlePlanner_UpdateGui();
+end
+
+function PetBattlePlanner_SetMinimumRarity(rarity)
+   PetBattlePlanner_db.Options.MinRarity  = rarity;
+
+   PetBattlePlanner_GenerateReport(); -- update the grid calculations and create a report
+   
+   PetBattlePlanner_UpdateGui();
+end
+
 
 function PetBattlePlanner_SetOpponentPetIndex(index)
 
@@ -464,14 +553,37 @@ function PetBattlePlanner_SetOpponentPetIndex(index)
    
       PetBattlePlanner_OpponentPetIndex = index;
    
+      PetBattlePlanner_GenerateReport(); -- update the grid calculations and create a report
+      
       PetBattlePlanner_UpdateGui();
    end
 end
 
+function PetBattlePlanner_GetCountMatrixCellColor( column, row )
+   returnVal = yellow;
+   
+   if (( column == 2-1 ) and ( row == 3-1 )) or
+      (( column == 2-1 ) and ( row == 4-1 )) or
+      (( column == 3-1 ) and ( row == 4-1 )) then
+      returnVal = red;
+   end
+   
+   if (( column == 3-1 ) and ( row == 2-1 )) or
+      (( column == 4-1 ) and ( row == 2-1 )) or
+      (( column == 4-1 ) and ( row == 3-1 )) then
+      returnVal = green;
+   end
+   
+   return returnVal;
+   
+end
+
+   
+   
 function PetBattlePlanner_UpdateGui()
    
    if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) then
-      PetBattlePlanner_TabPage1_OpponentNPCNameFrame:SetText(PetBattlePlanner_OpponentName);
+      PetBattlePlanner_TabPage1_OpponentNPCNameFrame:SetText(white..PetBattlePlanner_OpponentName);
    else
       PetBattlePlanner_TabPage1_OpponentNPCNameFrame:SetText("unknown");      
    end
@@ -482,10 +594,58 @@ function PetBattlePlanner_UpdateGui()
       ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex] ~= nil ) and
       ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex].Name ~= nil ) then
          
-      PetBattlePlanner_TabPage1_OpponentPetNameFrame:SetText(PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex].Name);
+      PetBattlePlanner_TabPage1_OpponentPetNameFrame:SetText(white..PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex].Name);
    else
       PetBattlePlanner_TabPage1_OpponentPetNameFrame:SetText("unknown");      
    end
+
+   --
+   -- update Grid numbers
+   --
+   
+   if ( PetBattlePlanner_local_db ~= nil ) then
+      local columnIndex,rowIndex;
+      
+      for columnIndex = 1,3 do
+         for rowIndex = 1,3 do
+            local cellText = PetBattlePlanner_GetCountMatrixCellColor( columnIndex, rowIndex )
+            cellText = cellText..#PetBattlePlanner_local_db[columnIndex][rowIndex];
+            
+            PetBattlePlanner_CountMatrixFrames[columnIndex+1][rowIndex+1]:SetText(cellText);
+         end
+      end
+   end
+   
+   if ( PetBattlePlanner_db.Options ~= nil ) and
+      ( PetBattlePlanner_db.Options.MinPetLevel ~= nil ) then
+      PetBattlePlanner_MinLevelSelectorButtons:SetText("Minimum Level:  "..PetBattlePlanner_db.Options.MinPetLevel);
+   end
+   
+   if ( PetBattlePlanner_db.Options ~= nil ) and
+      ( PetBattlePlanner_db.Options.MinRarity ~= nil ) then
+      PetBattlePlanner_MinRaritySelectorButtons:SetText("Minimum Rarity: "..RARITY_TEXT[PetBattlePlanner_db.Options.MinRarity]);
+   end
+   
+   if ( PetBattlePlanner_db.Options ~= nil ) and
+      ( PetBattlePlanner_db.Options.OnlyIncludeCaptured ~= nil ) then
+      
+      if ( PetBattlePlanner_db.Options.OnlyIncludeCaptured == true ) then
+         PetBattlePlanner_MinOwnershipSelectorButtons:SetText("Must Be Owned:  Yes");
+      else
+         PetBattlePlanner_MinOwnershipSelectorButtons:SetText("Must Be Owned:  No");
+      end
+   end
+ 
+
+
+
+
+-- local yellow = "|c00FFFF25";
+-- local white  = "|c00FFFFff";
+-- local red    = "|c00FF0000";
+-- local green  = "|c0000ff00";
+-- local blue   = "|c000000ff";
+
 
 
 end
@@ -508,7 +668,6 @@ function PetBattlePlanner_SetUpGuiFields()
       local filename, fontHeight, flags = item:GetFont();
       item:SetFont(filename, fontHeight+2, flags);      
       PetBattlePlanner_TabPage1_OpponentChooserHeader = item;
-
    end
    
 
@@ -629,7 +788,6 @@ function PetBattlePlanner_SetUpGuiFields()
                end)
       myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
       myButton:SetScript("OnClick", function(self,button,down)
-         print("Pet clicked button");
          EasyMenu(petMenuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_TabPage1_OpponentPetChooserButton" ,0,0, nil, 10)
           
          end)
@@ -637,1136 +795,299 @@ function PetBattlePlanner_SetUpGuiFields()
 
    end
 
-
-end
-
-
-
-
-
-
-
-
-function PetBattlePlanner_SetUpGuiFields_RaidMakerExample()
-   local index;
-
    --
-   -- Set up the Main Field grid
+   -- Set up the summary grid header
    --
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_Objects = {};
-   for index=1,22 do
-      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(50);
+   
+   do
+      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_CountMatrixTitle", "OVERLAY", "GameFontNormalSmall" )
+      item:SetWidth(150);
       item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_SampleTextTab1", "TOPLEFT", 0,0);
-         item:SetText("In Raid");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_Objects[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_Objects[index] = item;
+      item:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_OpponentChooserHeader", "TOPLEFT", 10,-25);
+      item:SetText("Me vs them");
+      item:SetJustifyH("LEFT");
+      local filename, fontHeight, flags = item:GetFont();
+      item:SetFont(filename, fontHeight+2, flags);      
+      PetBattlePlanner_CountMatrixTitle = item;
    end
-
-   -- Set up row separators
-   PetBattlePlanner_RaidBuilder_row_frame_Objects = {};
-   PetBattlePlanner_RaidBuilder_row_frameTexture_Objects = {};
-   for index=1,10 do
-      local myFrame = CreateFrame("Frame", "PetBattlePlanner_RaidBuilder_row_frame"..index, PetBattlePlanner_TabPage1_SampleTextTab1 )
-      myFrame:SetWidth(546)
-      local frameLevel = myFrame:GetFrameLevel();
-      myFrame:SetFrameLevel(frameLevel -1);
-      myFrame:SetHeight(18)
-      myFrame:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_Objects[2*index], "TOPLEFT", 0,0)
-      local myTexture = myFrame:CreateTexture("PetBattlePlanner_RaidBuilder_row_frameTexture"..index, "BACKGROUND")
-      myTexture:SetAllPoints()
-      myTexture:SetTexture(0.15, 0.15, 0.15, .25);
-      PetBattlePlanner_RaidBuilder_row_frame_Objects[index] = myFrame;
-      PetBattlePlanner_RaidBuilder_row_frameTexture_Objects[index] = myTexture;
-   end
-
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_Objects = {};
-   for index=1,22 do
-      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_Objects[1], "TOPRIGHT", 0,0);
-         item:SetText("Online");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_Objects[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_Objects[index] = item;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects = {};
-   for index=1,22 do
-      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(75);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_Objects[1], "TOPRIGHT", 0,0);
-         item:SetText("Response");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects[index] = item;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_Objects = {};
-   for index=1,22 do
-      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      item:ClearAllPoints();
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects[1], "TOPRIGHT", 0,0);
-         item:SetText("Char Name");
-      elseif ( index == 22 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_Objects[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_Objects[index] = item;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_TankFlag_ButtonObjects = {};
-   for index=1,22 do
-      local myButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_"..index-1);
-      local myFontString = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_TankFlag_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      myButton:SetFontString( myFontString )
-      myButton:SetWidth(38);
-      myButton:SetHeight(18);
-      myButton:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects[index], "TOPRIGHT", 100,0);
-      if ( index == 1 ) then
-         myButton:SetText("Tank");
-      else
-         myButton:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_TankFlag_ButtonObjects[index] = myButton;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_HealFlag_ButtonObjects = {};
-   for index=1,22 do
-      local myButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_"..index-1);
-      local myFontString = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_HealFlag_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      myButton:SetFontString( myFontString )
-      myButton:SetWidth(38);
-      myButton:SetHeight(18);
-      myButton:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_TankFlag_ButtonObjects[index], "TOPRIGHT", 0,0);
-      if ( index == 1 ) then
-         myButton:SetText("Heal");
-      else
-         myButton:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_HealFlag_ButtonObjects[index] = myButton;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_mDpsFlag_ButtonObjects = {};
-   for index=1,22 do
-      local myButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_"..index-1);
-      local myFontString = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_mDpsFlag_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      myButton:SetFontString( myFontString )
-      myButton:SetWidth(37);
-      myButton:SetHeight(18);
-      myButton:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_HealFlag_ButtonObjects[index], "TOPRIGHT", 0,0);
-      if ( index == 1 ) then
-         myButton:SetText("mDPS");
-      else
-         myButton:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_mDpsFlag_ButtonObjects[index] = myButton;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_rDpsFlag_ButtonObjects = {};
-   for index=1,22 do
-      local myButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_"..index-1);
-      local myFontString = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_rDpsFlag_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      myButton:SetFontString( myFontString )
-      myButton:SetWidth(37);
-      myButton:SetHeight(18);
-      myButton:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_mDpsFlag_ButtonObjects[index], "TOPRIGHT", 0,0);
-      if ( index == 1 ) then
-         myButton:SetText("rDPS");
-      else
-         myButton:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_rDpsFlag_ButtonObjects[index] = myButton;
-   end
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_Class_Objects = {};
-   for index=1,22 do
-      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_TabPage1_SampleTextTab1_Class_"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(75);
-      item:SetHeight(18);
-      item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_rDpsFlag_ButtonObjects[index], "TOPRIGHT", 0,0);
-      if ( index == 1 ) then
-         item:SetText("Class");
-      else
-         item:SetText(" ");
-      end
-      PetBattlePlanner_TabPage1_SampleTextTab1_Class_Objects[index] = item;
-   end
-
-
 
    --
-   -- Set up player name buttons
+   -- Set up the summary grid header
    --
+   
+   PetBattlePlanner_CountMatrixFrames = {};
+   PetBattlePlanner_CountMatrixButtons = {};
+   do
+      local rowIndex, colIndex;
+      local entryWidth = 50;
+      local entryHeight = 18;
+      
+      for colIndex=1,4 do
+         PetBattlePlanner_CountMatrixFrames[colIndex] = {};
+         PetBattlePlanner_CountMatrixButtons[colIndex] = {};
+         
+         for rowIndex=1,4 do
+            local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_CountMatrixTitle"..colIndex..rowIndex, "OVERLAY", "GameFontNormalSmall" )
+            item:SetWidth(entryWidth);
+            item:SetHeight(entryHeight);
+            item:SetPoint("TOPLEFT", "PetBattlePlanner_CountMatrixTitle", "BOTTOMLEFT", 0+entryWidth*(colIndex-1),-10-entryHeight*(rowIndex-1));
+            item:SetText("0");
+            item:SetJustifyH("CENTER");
+            PetBattlePlanner_CountMatrixFrames[colIndex][rowIndex] = item;
 
+            local myButton = CreateFrame("Button", "PetBattlePlanner_CountMatrixButtons"..colIndex..rowIndex, PetBattlePlanner_TabPage1_SampleTextTab1 )
+            myButton:SetFontString( item )
+            myButton:SetWidth(entryWidth);
+            myButton:SetHeight(entryHeight);
+            myButton:SetPoint("TOPLEFT", item, "TOPLEFT", 0,0);
+--            myButton:SetScript("OnEnter",
+--                     function(this)
+--                        GameTooltip_SetDefaultAnchor(GameTooltip, this)
+--                        GameTooltip:SetText("grid."..colIndex.."x"..rowIndex);
+--                        GameTooltip:Show()
+--                     end)
+--            myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+--            myButton:SetScript("OnClick", function(self,button,down)
+--               print("clicked");
+--               end)
+            PetBattlePlanner_CountMatrixButtons[colIndex][rowIndex] = myButton;
 
-   local menuTbl = {
-      {
-         text = "Alantodne",
-         isTitle = true,
-         notCheckable = true,
-      },
-      {
-         text = "Invite",
-         notCheckable = true,
-         func = function(self)
-            InviteUnit(PetBattlePlanner_menu_playerName);
-            end,
-      },
-      {
-         text = "Whisper",
-         notCheckable = true,
-         func = function()
-            print(red.."whisper "..white..PetBattlePlanner_menu_playerName..red.." not yet implemented.") end,
-      },
-      {
-         text = "Raid History",
-         notCheckable = true,
-         hasArrow = true,
-         menuList = {
-            { text = "raid 1", },
-            { text = "raid 2", },
-            { text = "raid 3", },
-         },
-      },
-   }
-
-   --
-   -- build raid history menu
-   --
-
-
-   local numMenuEntries, menuIndex;
-   if ( PetBattlePlanner_RaidParticipantLog ~= nil ) then
-      numMenuEntries = #PetBattlePlanner_RaidParticipantLog
-      if ( numMenuEntries > 5 ) then
-         numMenuEntries = 5; -- limit the number of histories to 10.
-      end
-      local raidIndexOffset = #PetBattlePlanner_RaidParticipantLog-numMenuEntries;  -- difference in index between menu and corresponding history entry
-
-
-      local tempMenuList = {};
-      for menuIndex=1,numMenuEntries do
-         tempMenuList[menuIndex] = {};
-         tempMenuList[menuIndex].hasArrow = true;
-         tempMenuList[menuIndex].notCheckable = true;
-         tempMenuList[menuIndex].text = PetBattlePlanner_RaidParticipantLog[menuIndex+raidIndexOffset].title
-         tempMenuList[menuIndex].arg1 = menuIndex+raidIndexOffset
-         tempMenuList[menuIndex].func = function(self, arg)
-            PetBattlePlanner_repeatLoggedRaid(arg);
-            end
-
-
-
-         local tempPlayerList = {};
-         local currentPlayerIndex = 1;
-         local menuPlayerName, menuPlayerNameInfo
-         for menuPlayerName, menuPlayerNameInfo in pairs(PetBattlePlanner_RaidParticipantLog[menuIndex+raidIndexOffset].playerInfo) do
-            if ( menuPlayerNameInfo.tank == 1 ) or
-               ( menuPlayerNameInfo.heals == 1 ) or
-               ( menuPlayerNameInfo.mDps == 1 ) or
-               ( menuPlayerNameInfo.rDps == 1 ) then
-
-
-               tempPlayerList[currentPlayerIndex] = {};
-               tempPlayerList[currentPlayerIndex].hasArrow = false;
-               tempPlayerList[currentPlayerIndex].notCheckable = true;
-
-               tempPlayerList[currentPlayerIndex].text = yellow;
-               if ( menuPlayerNameInfo.tank == 1 ) then
-                  tempPlayerList[currentPlayerIndex].text = tempPlayerList[currentPlayerIndex].text.." tank"
-               end
-               if ( menuPlayerNameInfo.heals == 1 ) then
-                  tempPlayerList[currentPlayerIndex].text = tempPlayerList[currentPlayerIndex].text.." heal"
-               end
-               if ( menuPlayerNameInfo.mDps == 1 ) then
-                  tempPlayerList[currentPlayerIndex].text = tempPlayerList[currentPlayerIndex].text.." mDps"
-               end
-               if ( menuPlayerNameInfo.rDps == 1 ) then
-                  tempPlayerList[currentPlayerIndex].text = tempPlayerList[currentPlayerIndex].text.." rDps"
-               end
-               tempPlayerList[currentPlayerIndex].text = tempPlayerList[currentPlayerIndex].text.."  - "..white..menuPlayerName
-
-               currentPlayerIndex = currentPlayerIndex + 1;
-            end
          end
-         tempMenuList[menuIndex].menuList = tempPlayerList;
-
-
       end
---         xxx = yellow.."\nResponded on:\n"..white..format(FULLDATE, CALENDAR_WEEKDAY_NAMES[weekday],CALENDAR_FULLDATE_MONTH_NAMES[month],day, year, month ).."\n"..GameTime_GetFormattedTime(hour, minute, true)
-
-
-
-      menuTbl[4].menuList = tempMenuList;
    end
 
    --
-   -- set up player name menu
-   --
-
-   PetBattlePlanner_PlayerName_Button_Objects = {};
-   for index=1,20 do
-      local item = CreateFrame("Button", "PetBattlePlanner_PlayerName_Button_"..index-1, PetBattlePlanner_TabPage1_SampleTextTab1 )
-      item:SetFontString( PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_Objects[index+1] )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_Objects[index+1], "TOPRIGHT", 0,0);
-      item:SetText("X");
-      item:SetScript("OnClick", function(self,button)
-         local myText = self:GetText();
-         local startIndex1,endIndex1,playerName = strfind(myText, "c%x%x%x%x%x%x%x%x(.*)");
-         if ( playerName ~= nil ) then
-            menuTbl[1].text = playerName;
-            PetBattlePlanner_menu_playerName = playerName;
-            EasyMenu(menuTbl, PetBattlePlanner_TabPage1_SampleTextTab1, "PetBattlePlanner_PlayerName_Button_"..index-1 ,0,0, nil, 10)
-         end
-      end)
-      item:SetScript("OnEnter",
-         function(self)
-            local myText = self:GetText();
-            local startIndex1,endIndex1,playerName = strfind(myText, "c%x%x%x%x%x%x%x%x(.*)");
-            if ( playerName ~= nil ) then
-               if ( raidPlayerDatabase ~= nil ) then -- only process if there is a database to parse.
-                  if ( raidPlayerDatabase.playerInfo ~= nil ) then
-                     if ( raidPlayerDatabase.playerInfo[playerName] ~= nil ) then
-                        local currentTime = time()
-                        if ( currentTime - previousGuildRosterUpdateTime > 15 ) then
-                           GuildRoster(); -- trigger a GUILD_ROSTER_UPDATE event so we can get the online/offline status of players.
-                        end
-
-                        if ( raidPlayerDatabase.playerInfo[playerName].zone ~= nil ) then
-
-                           local signupText = ""
-                           GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT",0,0)
-                           if ( raidPlayerDatabase.playerInfo[playerName].signupInfo ~= nil ) then
-
-                              local weekday = raidPlayerDatabase.playerInfo[playerName].signupInfo.weekday;
-                              local month   = raidPlayerDatabase.playerInfo[playerName].signupInfo.month  ;
-                              local day     = raidPlayerDatabase.playerInfo[playerName].signupInfo.day    ;
-                              local year    = raidPlayerDatabase.playerInfo[playerName].signupInfo.year   ;
-                              local hour    = raidPlayerDatabase.playerInfo[playerName].signupInfo.hour   ;
-                              local minute  = raidPlayerDatabase.playerInfo[playerName].signupInfo.minute ;
-
-                              if ( weekday ~= nil ) and
-                                 ( weekday ~= 0 ) then
-                                 signupText = yellow.."\nResponded on:\n"..white..format(FULLDATE, CALENDAR_WEEKDAY_NAMES[weekday],CALENDAR_FULLDATE_MONTH_NAMES[month],day, year, month ).."\n"..GameTime_GetFormattedTime(hour, minute, true)
-                              end
-                           end
-                           GameTooltip:SetText(white..playerName..yellow.." last seen in "..green..raidPlayerDatabase.playerInfo[playerName].zone..signupText);
+   -- Set up the summary grid row/column header text
+   --                            
+   
+   -- [1][1] [2][1] [2][1] [4][1]
+   -- [1][2] [2][2] [2][2] [4][2]
+   -- [1][3] [2][3] [2][3] [4][3]
+   -- [1][4] [2][4] [2][4] [4][4]
+   do
+      PetBattlePlanner_CountMatrixFrames[1][1]:SetText(yellow.."Def\\Atk");
+     
+      -- attack info
+      PetBattlePlanner_CountMatrixFrames[2][1]:SetText(red.."Weak");
+      PetBattlePlanner_CountMatrixFrames[3][1]:SetText(yellow.."Ok");
+      PetBattlePlanner_CountMatrixFrames[4][1]:SetText(green.."Strong");
+   
+      -- defense info
+      PetBattlePlanner_CountMatrixFrames[1][2]:SetText(green.."Strong"); 
+      PetBattlePlanner_CountMatrixFrames[1][3]:SetText(yellow.."Ok");    
+      PetBattlePlanner_CountMatrixFrames[1][4]:SetText(red.."Weak");     
+   
+   
+      -- set up tooltips for attack
+      PetBattlePlanner_CountMatrixButtons[2][1]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this column are weak when attacking this enemy.");
                            GameTooltip:Show()
-                        end
-                     end
-                  end
-               end
+                        end)
+      PetBattlePlanner_CountMatrixButtons[3][1]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this column are Ok when attacking this enemy.");
+                           GameTooltip:Show()
+                        end)
+      PetBattlePlanner_CountMatrixButtons[4][1]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this column are Strong when attacking this enemy.");
+                           GameTooltip:Show()
+                        end)
+   
+      PetBattlePlanner_CountMatrixButtons[1][2]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this row are Strong at defending vs this enemy.");
+                           GameTooltip:Show()
+                        end)
+      PetBattlePlanner_CountMatrixButtons[1][3]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this row are Ok at defending vs this enemy.");
+                           GameTooltip:Show()
+                        end)
+      PetBattlePlanner_CountMatrixButtons[1][4]:SetScript("OnEnter",
+                        function(this)
+                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                           GameTooltip:SetText("Your pets in this row are Weak at defending vs this enemy.");
+                           GameTooltip:Show()
+                        end)
+
+   end
+
+   --
+   -- Set up the minimum level selector
+   --                            
+   
+   do
+      local menuTbl = {
+         {
+            text = "Pet Level Selector",
+            isTitle = true,
+            notCheckable = true,
+         }
+      }
+      local menuIndex;
+      for menuIndex=0,25 do
+         menuTbl[2+menuIndex] = {};
+         menuTbl[2+menuIndex].hasArrow = false;
+         menuTbl[2+menuIndex].notCheckable = true;
+         menuTbl[2+menuIndex].text = menuIndex;
+         if ( menuIndex == 0 ) then menuTbl[2+menuIndex].text = "Uncaptured"; end
+         menuTbl[2+menuIndex].arg1 = menuIndex;
+         menuTbl[2+menuIndex].func = function(self, arg)
+            PetBattlePlanner_SetMinimumLevel(arg);
             end
-         end)
-      item:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
-
-      PetBattlePlanner_PlayerName_Button_Objects[index] = item;
-
-
-   end
-
-
-
-   --
-   -- Set up class totals text fields.
-   --
-
-   PetBattlePlanner_WarriorCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_WarriorCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_WarriorCount_Object:SetWidth(18);
-   PetBattlePlanner_WarriorCount_Object:SetHeight(18);
-   PetBattlePlanner_WarriorCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_SampleTextTab1_Class_1, "TOPRIGHT", 55,-7);
-   PetBattlePlanner_WarriorCount_Object:SetText(" ");
-
-   PetBattlePlanner_MageCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_MageCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_MageCount_Object:SetWidth(18);
-   PetBattlePlanner_MageCount_Object:SetHeight(18);
-   PetBattlePlanner_MageCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_WarriorCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_MageCount_Object:SetText(" ");
-
-   PetBattlePlanner_RogueCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_RogueCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_RogueCount_Object:SetWidth(18);
-   PetBattlePlanner_RogueCount_Object:SetHeight(18);
-   PetBattlePlanner_RogueCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_MageCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_RogueCount_Object:SetText(" ");
-
-   PetBattlePlanner_DruidCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_DruidCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_DruidCount_Object:SetWidth(18);
-   PetBattlePlanner_DruidCount_Object:SetHeight(18);
-   PetBattlePlanner_DruidCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_RogueCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_DruidCount_Object:SetText(" ");
-
-   PetBattlePlanner_HunterCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_HunterCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_HunterCount_Object:SetWidth(18);
-   PetBattlePlanner_HunterCount_Object:SetHeight(18);
-   PetBattlePlanner_HunterCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_DruidCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_HunterCount_Object:SetText(" ");
-
-   PetBattlePlanner_ShamanCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_ShamanCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_ShamanCount_Object:SetWidth(18);
-   PetBattlePlanner_ShamanCount_Object:SetHeight(18);
-   PetBattlePlanner_ShamanCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_HunterCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_ShamanCount_Object:SetText(" ");
-
-   PetBattlePlanner_PriestCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_PriestCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_PriestCount_Object:SetWidth(18);
-   PetBattlePlanner_PriestCount_Object:SetHeight(18);
-   PetBattlePlanner_PriestCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_ShamanCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_PriestCount_Object:SetText(" ");
-
-   PetBattlePlanner_WarlockCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_WarlockCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_WarlockCount_Object:SetWidth(18);
-   PetBattlePlanner_WarlockCount_Object:SetHeight(18);
-   PetBattlePlanner_WarlockCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_PriestCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_WarlockCount_Object:SetText(" ");
-
-   PetBattlePlanner_PaladinCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_PaladinCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_PaladinCount_Object:SetWidth(18);
-   PetBattlePlanner_PaladinCount_Object:SetHeight(18);
-   PetBattlePlanner_PaladinCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_WarlockCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_PaladinCount_Object:SetText(" ");
-
-   PetBattlePlanner_DeathknightCount_Object = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_DeathknightCount", "OVERLAY", "GameFontNormalSmall" )
-   PetBattlePlanner_DeathknightCount_Object:SetWidth(18);
-   PetBattlePlanner_DeathknightCount_Object:SetHeight(18);
-   PetBattlePlanner_DeathknightCount_Object:SetPoint("TOPLEFT", PetBattlePlanner_PaladinCount_Object, "BOTTOMLEFT", 0,-18);
-   PetBattlePlanner_DeathknightCount_Object:SetText(" ");
-
-   --
-   -- Set up the Class Icons.
-   --
-
-   -- take the Blizzard UI graphic with a grid of 4x4 class icons and crop out the desired class one at a time.
-   -- Warrior
-   CreateFrame("Frame", "PetBattlePlanner_WarriorClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_WarriorClassPicture:SetWidth(25)
-   PetBattlePlanner_WarriorClassPicture:SetHeight(25)
-   PetBattlePlanner_WarriorClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_WarriorCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_WarriorClassPicture:CreateTexture("PetBattlePlanner_WarriorClassPictureTexture")
-   PetBattlePlanner_WarriorClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_WarriorClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_WarriorClassPictureTexture:SetTexCoord(0,0.25,0,0.25)
-   -- mage
-   CreateFrame("Frame", "PetBattlePlanner_MageClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_MageClassPicture:SetWidth(25)
-   PetBattlePlanner_MageClassPicture:SetHeight(25)
-   PetBattlePlanner_MageClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_MageCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_MageClassPicture:CreateTexture("PetBattlePlanner_MageClassPictureTexture")
-   PetBattlePlanner_MageClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_MageClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_MageClassPictureTexture:SetTexCoord(.25,0.5,0,0.25)
-   -- rogue
-   CreateFrame("Frame", "PetBattlePlanner_RogueClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_RogueClassPicture:SetWidth(25)
-   PetBattlePlanner_RogueClassPicture:SetHeight(25)
-   PetBattlePlanner_RogueClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_RogueCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_RogueClassPicture:CreateTexture("PetBattlePlanner_RogueClassPictureTexture")
-   PetBattlePlanner_RogueClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_RogueClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_RogueClassPictureTexture:SetTexCoord(0.5,0.75,0,0.25)
-   -- druid
-   CreateFrame("Frame", "PetBattlePlanner_DruidClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_DruidClassPicture:SetWidth(25)
-   PetBattlePlanner_DruidClassPicture:SetHeight(25)
-   PetBattlePlanner_DruidClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_DruidCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_DruidClassPicture:CreateTexture("PetBattlePlanner_DruidClassPictureTexture")
-   PetBattlePlanner_DruidClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_DruidClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_DruidClassPictureTexture:SetTexCoord(0.75,1.0,0,0.25)
-   -- hunter
-   CreateFrame("Frame", "PetBattlePlanner_HunterClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_HunterClassPicture:SetWidth(25)
-   PetBattlePlanner_HunterClassPicture:SetHeight(25)
-   PetBattlePlanner_HunterClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_HunterCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_HunterClassPicture:CreateTexture("PetBattlePlanner_HunterClassPictureTexture")
-   PetBattlePlanner_HunterClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_HunterClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_HunterClassPictureTexture:SetTexCoord(0,0.25,0.25,0.5)
-   -- shaman
-   CreateFrame("Frame", "PetBattlePlanner_ShamanClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_ShamanClassPicture:SetWidth(25)
-   PetBattlePlanner_ShamanClassPicture:SetHeight(25)
-   PetBattlePlanner_ShamanClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_ShamanCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_ShamanClassPicture:CreateTexture("PetBattlePlanner_ShamanClassPictureTexture")
-   PetBattlePlanner_ShamanClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_ShamanClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_ShamanClassPictureTexture:SetTexCoord(.25,0.5,0.25,0.5)
-   -- priest
-   CreateFrame("Frame", "PetBattlePlanner_PriestClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_PriestClassPicture:SetWidth(25)
-   PetBattlePlanner_PriestClassPicture:SetHeight(25)
-   PetBattlePlanner_PriestClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_PriestCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_PriestClassPicture:CreateTexture("PetBattlePlanner_PriestClassPictureTexture")
-   PetBattlePlanner_PriestClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_PriestClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_PriestClassPictureTexture:SetTexCoord(0.5,0.75,0.25,0.5)
-   -- warlock
-   CreateFrame("Frame", "PetBattlePlanner_WarlockClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_WarlockClassPicture:SetWidth(25)
-   PetBattlePlanner_WarlockClassPicture:SetHeight(25)
-   PetBattlePlanner_WarlockClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_WarlockCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_WarlockClassPicture:CreateTexture("PetBattlePlanner_WarlockClassPictureTexture")
-   PetBattlePlanner_WarlockClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_WarlockClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_WarlockClassPictureTexture:SetTexCoord(0.75,1.0,0.25,0.5)
-   --   paladin
-   CreateFrame("Frame", "PetBattlePlanner_PaladinClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_PaladinClassPicture:SetWidth(25)
-   PetBattlePlanner_PaladinClassPicture:SetHeight(25)
-   PetBattlePlanner_PaladinClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_PaladinCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_PaladinClassPicture:CreateTexture("PetBattlePlanner_PaladinClassPictureTexture")
-   PetBattlePlanner_PaladinClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_PaladinClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_PaladinClassPictureTexture:SetTexCoord(0,0.25,0.5,0.75)
-   --   deathknight
-   CreateFrame("Frame", "PetBattlePlanner_DeathKnightClassPicture", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   PetBattlePlanner_DeathKnightClassPicture:SetWidth(25)
-   PetBattlePlanner_DeathKnightClassPicture:SetHeight(25)
-   PetBattlePlanner_DeathKnightClassPicture:SetPoint("TOPRIGHT", PetBattlePlanner_DeathknightCount, "TOPLEFT", 0,3)
-   PetBattlePlanner_DeathKnightClassPicture:CreateTexture("PetBattlePlanner_DeathKnightClassPictureTexture")
-   PetBattlePlanner_DeathKnightClassPictureTexture:SetAllPoints()
-   PetBattlePlanner_DeathKnightClassPictureTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-   PetBattlePlanner_DeathKnightClassPictureTexture:SetTexCoord(.25,0.5,0.5,0.75)
-
-
-   --
-   -- Position the raid maker buttons.
-   --
-   local localButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_GroupedStateHeaderButton");
-   localButton:SetPoint("TOPRIGHT", "PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_0", "TOPRIGHT", 0,3)
-
-   local localButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_OnlineStateHeaderButton");
-   localButton:SetPoint("TOPRIGHT", "PetBattlePlanner_TabPage1_SampleTextTab1_OnlineState_0", "TOPRIGHT", 0,3)
-
-   local localButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatusHeaderButton");
-   localButton:SetPoint("TOPRIGHT", "PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatus_0", "TOPRIGHT", 0,3)
-
-   local localButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_PlayerNameHeaderButton");
-   localButton:SetPoint("TOPRIGHT", "PetBattlePlanner_TabPage1_SampleTextTab1_PlayerName_0", "TOPRIGHT", 0,3)
-
-   local localButton = getglobal("PetBattlePlanner_TabPage1_SampleTextTab1_ClassHeaderButton");
-   localButton:SetPoint("TOPRIGHT", "PetBattlePlanner_TabPage1_SampleTextTab1_Class_0", "TOPRIGHT", 0,3)
-
-
-   local localButton = getglobal("PetBattlePlanner_FetchCalendarButton");
-   localButton:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_SampleTextTab1_GroupedState_21", "BOTTOMLEFT", 0,-12)
-
-
-
-   --
-   -- Set up the tooltips for the buttons.
-   --
-   PetBattlePlanner_FetchCalendarButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Fetches most recently opened calander and resets role selections.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_FetchCalendarButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_SendAnnouncementButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Announces to /guild that invites will be coming soon.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_SendAnnouncementButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_SendInvitesButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sends group invites to all checked players and forms raid group.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_SendInvitesButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_SendInvDoneMsgButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sends msg to /guild indicating that all invites are sent.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_SendInvDoneMsgButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_SendRolesButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sends the list of tanks, healers, and dps to /raid.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_SendRolesButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_ButtonRefresh:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Forces refresh on player online status and last zone.  Throttled by server.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_ButtonRefresh:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
-   --
-   -- Set Up tooltips for roll tab buttons
-   --
-
-   PetBattlePlanner_RollResetButton4:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Purge all roll entries that are older than 4 minutes in age.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton4:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_RollResetButton3:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Purge all roll entries that are older than 3 minutes in age.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton3:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_RollResetButton2:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Purge all roll entries that are older than 2 minutes in age.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton2:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_RollResetButton1:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Purge all roll entries that are older than 1 minutes in age.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton1:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_RollResetButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Purge all roll entries.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
-   --
-   -- Set Up tooltips for column header buttons
-   --
-   PetBattlePlanner_TabPage1_SampleTextTab1_GroupedStateHeaderButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Grouped status; Event Response status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_GroupedStateHeaderButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_OnlineStateHeaderButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Online status; Event Response status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_OnlineStateHeaderButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatusHeaderButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Event Response status; Response Time; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_InviteStatusHeaderButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_PlayerNameHeaderButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_PlayerNameHeaderButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_ClassHeaderButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Class name; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_ClassHeaderButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_0:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Tank status; Healer status; DPS status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_TankButton_0:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_0:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by Healer status; Tank status; DPS status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_TabPage1_SampleTextTab1_HealButton_0:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_mDpsButton_0:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by DPS status; Tank status; Healer status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-   PetBattlePlanner_TabPage1_SampleTextTab1_rDpsButton_0:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Sort by DPS status; Tank status; Healer status; Player Name.");
-                  GameTooltip:Show()
-               end)
-   PetBattlePlanner_RollResetButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
-   --
-   -- Set up the RM button on the blizzard calendar event and calendar view screens.
-   --
-
-   -- create the button for the Raid Edit screen
-   PetBattlePlannerLaunchCalEditButton = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
-   PetBattlePlannerLaunchCalEditButton:SetHeight(20)
-
-   PetBattlePlannerLaunchCalEditButton:RegisterForClicks("LeftButtonUp")
-   PetBattlePlannerLaunchCalEditButton:SetScript("OnClick",
-               function(self, button, down)
-
-                  if PetBattlePlanner_MainForm:IsVisible() then
-                     PetBattlePlanner_MainForm:Hide()
-                  else
-                     PetBattlePlanner_MainForm:Show()
-                     PetBattlePlanner_HandleFetchCalButton()
-                  end
-               end)
-
-   PetBattlePlannerLaunchCalEditButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("show PetBattlePlanner gui. Same as /rm toggle")
-                  GameTooltip:Show()
-               end)
-   PetBattlePlannerLaunchCalEditButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-   PetBattlePlannerLaunchCalEditButton:SetText("RM")
-
-
-   -- create the button for the Raid Viewer screen
-   PetBattlePlannerLaunchCalViewButton = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
-   PetBattlePlannerLaunchCalViewButton:SetHeight(20)
-
-   PetBattlePlannerLaunchCalViewButton:RegisterForClicks("LeftButtonUp")
-   PetBattlePlannerLaunchCalViewButton:SetScript("OnClick",
-               function(self, button, down)
-
-                  if PetBattlePlanner_MainForm:IsVisible() then
-                     PetBattlePlanner_MainForm:Hide()
-                  else
-                     PetBattlePlanner_MainForm:Show()
-                     PetBattlePlanner_HandleFetchCalButton()
-                  end
-               end)
-
-   PetBattlePlannerLaunchCalViewButton:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("show PetBattlePlanner gui. Same as /rm toggle")
-                  GameTooltip:Show()
-               end)
-   PetBattlePlannerLaunchCalViewButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-   PetBattlePlannerLaunchCalViewButton:SetText("RM")
-   -- must wait for the CALENDAR_OPEN_EVENT event to complete the initialization.
-
-
-   --
-   -- Set up FontString fields from the Roll Log area
-   --
-
-   PetBattlePlanner_LogTab_Rolls_FieldPlayerNames = {}
-   PetBattlePlanner_LogTab_Rolls_FieldRollValues = {}
-   PetBattlePlanner_LogTab_Rolls_FieldRollAges = {}
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Rolls_FieldNamesField"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_GroupRollFrame, "TOPLEFT", 5,-5);
-         item:SetText("Player");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Rolls_FieldPlayerNames[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
       end
-      PetBattlePlanner_LogTab_Rolls_FieldPlayerNames[index] = item;
-   end
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Rolls_RollValue"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
+
+      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_MinLevelSelector", "OVERLAY", "GameFontNormalSmall" )
+      item:SetWidth(150);
       item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Rolls_FieldPlayerNames[1], "TOPRIGHT", 0,0);
-         item:SetText("Roll Value");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Rolls_FieldRollValues[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_LogTab_Rolls_FieldRollValues[index] = item;
-   end
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Rolls_RollAges"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Rolls_FieldRollValues[1], "TOPRIGHT", 0,0);
-         item:SetText("Roll Age");
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Rolls_FieldRollAges[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_LogTab_Rolls_FieldRollAges[index] = item;
-   end
+      item:SetPoint("TOPLEFT", "PetBattlePlanner_CountMatrixTitle14", "BOTTOMLEFT", 0,-10);
+      item:SetText("Minimum Level:  xx");
+      item:SetJustifyH("LEFT");
+      PetBattlePlanner_MinLevelSelector = item;
 
-   --
-   -- Set up text fields from the Loot Log area
-   --
-   PetBattlePlanner_LogTab_Loot_FieldNames = {}
-   PetBattlePlanner_LogTab_Loot_FieldRollValues = {}
-   PetBattlePlanner_LogTab_Loot_FieldRollAges = {}
-   PetBattlePlanner_LogTab_Loot_FieldItemLink = {}
-   PetBattlePlanner_LogTab_Loot_FieldItemLinkButton = {}
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Loot_FieldNamesField"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetPoint("TOPLEFT", PetBattlePlanner_GroupLootFrame, "TOPLEFT", 5,-5);
-         item:SetText("Player");
-         local myButton = CreateFrame("Button", "PetBattlePlanner_LogTab_Loot_PlayerNameButton", PetBattlePlanner_GroupLootFrame )
-         myButton:SetFontString( item )
-         myButton:SetWidth(100);
-         myButton:SetHeight(18);
-         myButton:SetPoint("TOPLEFT", PetBattlePlanner_GroupLootFrame, "TOPLEFT", 5,-5);
-         myButton:SetScript("OnEnter",
-                  function(this)
-                     GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                     GameTooltip:SetText("Sort by player name.");
-                     GameTooltip:Show()
-                  end)
-         myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-         myButton:SetScript("OnClick", function(self,button)
-            PetBattlePlanner_LootLog_ClickHandler_PlayerName();
-            end)
-         PetBattlePlanner_LogTab_Loot_PlayerNameButtonObject = myButton;
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldNames[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_LogTab_Loot_FieldNames[index] = item;
-   end
-
-
-
-
-   for index=1,11 do
-      local myFontString = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Loot_ItemLink"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      local myButton = CreateFrame("Button", "PetBattlePlanner_LogTab_Loot_ItemLinkButton_"..index-1, PetBattlePlanner_GroupRollFrame )
-      myButton:SetFontString( myFontString )
-      myButton:SetWidth(200);
+      local myButton = CreateFrame("Button", "PetBattlePlanner_MinLevelSelectorButtons", PetBattlePlanner_TabPage1_SampleTextTab1 )
+      myButton:SetFontString( item )
+      myButton:SetWidth(150);
       myButton:SetHeight(18);
-      if ( index == 1 ) then
-         myButton:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldNames[1], "TOPRIGHT", 0,0);
-         myButton:SetText("Item Name");
+      myButton:SetPoint("TOPLEFT", item, "TOPLEFT", 0,0);
+      myButton:SetScript("OnEnter",
+               function(this)
+                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                  GameTooltip:SetText("Used to choose the minimum level of the pets for analysis");
+                  GameTooltip:Show()
+               end)
+      myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      myButton:SetScript("OnClick", function(self,button,down)
+         EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_MinLevelSelectorButtons" ,0,0, nil, 10)
+         end)
+      PetBattlePlanner_MinLevelSelectorButtons = myButton;
 
-         myButton:SetScript("OnEnter",
-                  function(this)
-                     GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                     GameTooltip:SetText("Sort by Item name.");
-                     GameTooltip:Show()
-                  end)
-         myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-         myButton:SetScript("OnClick", function(self,button)
-            PetBattlePlanner_LootLog_ClickHandler_ItemName();
-            end)
-      else
-         myButton:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldItemLinkButton[index-1], "BOTTOMLEFT", 0,0);
-         myButton:SetText(" ");
-         myButton:SetScript("OnEnter",
-                  function(this)
-                     GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                     local myText = this:GetText();
-                     local startIndex,endIndex,itemID = strfind(myText, "(%d+):")
-                     if ( itemID ~= nil ) then
-                        GameTooltip:SetHyperlink(myText);
-                        GameTooltip:Show()
-                     end
-                  end)
-         myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-      end
 
-      PetBattlePlanner_LogTab_Loot_FieldItemLinkButton[index] = myButton;
-      PetBattlePlanner_LogTab_Loot_FieldItemLink[index] = myFontString;
-   end
 
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Loot_RollValue"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
-      item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetText("Roll Value");
-         local myButton = CreateFrame("Button", "PetBattlePlanner_LogTab_Loot_RollValueButton", PetBattlePlanner_GroupLootFrame )
-         myButton:SetFontString( item )
-         myButton:SetWidth(100);
-         myButton:SetHeight(18);
 
-         myButton:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldItemLinkButton[1], "TOPRIGHT", 0,0);
-         myButton:SetScript("OnEnter",
-                  function(this)
-                     GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                     GameTooltip:SetText("Sort by Roll Value name.");
-                     GameTooltip:Show()
-                  end)
-         myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-         myButton:SetScript("OnClick", function(self,button)
-            PetBattlePlanner_LootLog_ClickHandler_RollValue();
-            end)
-         PetBattlePlanner_LogTab_Loot_RollValueButtonObject = myButton;
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldRollValues[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_LogTab_Loot_FieldRollValues[index] = item;
+
    end
    
-   for index=1,11 do
-      local item = PetBattlePlanner_GroupRollFrame:CreateFontString("PetBattlePlanner_LogTab_Loot_RollAges"..index-1, "OVERLAY", "GameFontNormalSmall" )
-      item:SetWidth(100);
+   --
+   -- Set up the minimum rarity selector
+   --                            
+   
+   do
+      local menuTbl = {
+         {
+            text = "Minimum Rarity",
+            isTitle = true,
+            notCheckable = true,
+         }
+      }
+      local menuIndex;
+      for menuIndex=2,1+7 do
+         menuTbl[menuIndex] = {};
+         menuTbl[menuIndex].hasArrow = false;
+         menuTbl[menuIndex].notCheckable = true;
+         menuTbl[menuIndex].text = RARITY_TEXT[menuIndex-1]
+         menuTbl[menuIndex].arg1 = menuIndex-1
+         menuTbl[menuIndex].func = function(self, arg)
+            PetBattlePlanner_SetMinimumRarity(arg);
+            end
+      end
+
+      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_MinRaritySelector", "OVERLAY", "GameFontNormalSmall" )
+      item:SetWidth(150);
       item:SetHeight(18);
-      if ( index == 1 ) then
-         item:SetText("Roll Age");
-         local myButton = CreateFrame("Button", "PetBattlePlanner_LogTab_Loot_RollAgeButton", PetBattlePlanner_GroupLootFrame )
-         myButton:SetFontString( item )
-         myButton:SetWidth(100);
-         myButton:SetHeight(18);
+      item:SetPoint("TOPLEFT", "PetBattlePlanner_MinLevelSelector", "BOTTOMLEFT", 0,-10);
+      item:SetText("Minimum Rarity: xx");
+      item:SetJustifyH("LEFT");
+      PetBattlePlanner_MinRaritySelector = item;
 
-         myButton:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldRollValues[1], "TOPRIGHT", 0,0);
-         myButton:SetScript("OnEnter",
-                  function(this)
-                     GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                     GameTooltip:SetText("Sort by Roll Age name.");
-                     GameTooltip:Show()
-                  end)
-         myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-         myButton:SetScript("OnClick", function(self,button)
-            PetBattlePlanner_LootLog_ClickHandler_RollAge();
-            end)
-         PetBattlePlanner_LogTab_Loot_RollAgeButtonObject = myButton;
-      else
-         item:SetPoint("TOPLEFT", PetBattlePlanner_LogTab_Loot_FieldRollAges[index-1], "BOTTOMLEFT", 0,0);
-         item:SetText(" ");
-      end
-      PetBattlePlanner_LogTab_Loot_FieldRollAges[index] = item;
+      local myButton = CreateFrame("Button", "PetBattlePlanner_MinRaritySelectorButtons", PetBattlePlanner_TabPage1_SampleTextTab1 )
+      myButton:SetFontString( item )
+      myButton:SetWidth(150);
+      myButton:SetHeight(18);
+      myButton:SetPoint("TOPLEFT", item, "TOPLEFT", 0,0);
+      myButton:SetScript("OnEnter",
+               function(this)
+                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                  GameTooltip:SetText("Used to choose the minimum rarity of the pet for analysis.");
+                  GameTooltip:Show()
+               end)
+      myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      myButton:SetScript("OnClick", function(self,button,down)
+         EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_MinRaritySelectorButtons" ,0,0, nil, 10)
+         end)
+      PetBattlePlanner_MinRaritySelectorButtons = myButton;
+   end
+
+   --
+   -- Set up the minimum ownership selector
+   --                            
+   
+   do
+      local menuTbl = {
+         {
+            text = "Pet Owned",
+            isTitle = true,
+            notCheckable = true,
+         },
+         {
+            text = "Yes",
+            notCheckable = true,
+            func = function(self)
+               PetBattlePlanner_SetMinimumOwnership(true);
+               end,
+         },
+         {
+            text = "No",
+            notCheckable = true,
+            func = function(self)
+               PetBattlePlanner_SetMinimumOwnership(false);
+               end,
+         }
+      }
+
+      local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_MinOwnershipSelector", "OVERLAY", "GameFontNormalSmall" )
+      item:SetWidth(150);
+      item:SetHeight(18);
+      item:SetPoint("TOPLEFT", "PetBattlePlanner_MinRaritySelector", "BOTTOMLEFT", 0,-10);
+      item:SetText("Must Be Owned:  xx");
+      item:SetJustifyH("LEFT");
+      PetBattlePlanner_MinOwnershipSelector = item;
+
+      local myButton = CreateFrame("Button", "PetBattlePlanner_MinOwnershipSelectorButtons", PetBattlePlanner_TabPage1_SampleTextTab1 )
+      myButton:SetFontString( item )
+      myButton:SetWidth(150);
+      myButton:SetHeight(18);
+      myButton:SetPoint("TOPLEFT", item, "TOPLEFT", 0,0);
+      myButton:SetScript("OnEnter",
+               function(this)
+                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                  GameTooltip:SetText("Used to specify if pets must be owned by the player.");
+                  GameTooltip:Show()
+               end)
+      myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      myButton:SetScript("OnClick", function(self,button,down)
+         EasyMenu(menuTbl, PetBattlePlanner_TabPage1, "PetBattlePlanner_MinOwnershipSelectorButtons" ,0,0, nil, 10)
+         end)
+      PetBattlePlanner_MinOwnershipSelectorButtons = myButton;
    end
 
 
-   --
-   -- Set up the Lootlog slider
-   --
-   PetBattlePlanner_LootLog_Slider:SetPoint("TOPLEFT", "PetBattlePlanner_LogTab_Loot_RollAges1", "TOPRIGHT", 0,0);
-   PetBattlePlanner_LootLog_Slider:SetScript("OnValueChanged", PetBattlePlanner_DisplayLootDatabase );
-
-   if ( #PetBattlePlanner_lootLogData <= 10 ) then
-      PetBattlePlanner_LootLog_Slider:SetMinMaxValues(#PetBattlePlanner_lootLogData-9,#PetBattlePlanner_lootLogData-9);
-      PetBattlePlanner_LootLog_Slider:SetValue(#PetBattlePlanner_lootLogData-9);
-   else
-      PetBattlePlanner_LootLog_Slider:SetMinMaxValues(1,#PetBattlePlanner_lootLogData-9);
-      PetBattlePlanner_LootLog_Slider:SetValue(#PetBattlePlanner_lootLogData-9);
-   end
-
-
-   --
-   -- Set up the Rolllog slider
-   --
-   PetBattlePlanner_RollLog_Slider:SetPoint("TOPLEFT", "PetBattlePlanner_LogTab_Rolls_RollAges1", "TOPRIGHT", 0,0);
-   PetBattlePlanner_RollLog_Slider:SetScript("OnValueChanged", PetBattlePlanner_DisplayRollsDatabase );
-
-
-   --
-   -- Set up the PetBattlePlanner slider
-   --
-   PetBattlePlanner_VSlider:SetPoint("TOPLEFT", "PetBattlePlanner_TabPage1_SampleTextTab1_Class_1", "TOPRIGHT", 0,0);
-   PetBattlePlanner_VSlider:SetScript("OnValueChanged", PetBattlePlanner_TextTableUpdate );
-
-   --
-   -- Set up the mouse wheel to scroll
-   --
-   PetBattlePlanner_GroupRollFrame:EnableMouseWheel(true);
-   PetBattlePlanner_GroupRollFrame:SetScript("OnMouseWheel", function(self,delta) PetBattlePlanner_OnMouseWheelRollLog(self, delta) end );
-   PetBattlePlanner_GroupLootFrame:EnableMouseWheel(true);
-   PetBattlePlanner_GroupLootFrame:SetScript("OnMouseWheel", function(self,delta) PetBattlePlanner_OnMouseWheelLootLog(self, delta) end );
-   PetBattlePlanner_TabPage1:EnableMouseWheel(true);
-   PetBattlePlanner_TabPage1:SetScript("OnMouseWheel", function(self,delta) PetBattlePlanner_OnMouseWheel(self, delta) end );
-
-   PetBattlePlanner_RollLog_Slider:SetMinMaxValues(1,1);
-   PetBattlePlanner_RollLog_Slider:SetValue(1);
-
-   --
-   -- Create sync checkbox
-   --
-   PetBattlePlanner_sync_enabled = 0;
-   local frame = CreateFrame("CheckButton", "PetBattlePlanner_Sync_Checkbutton", PetBattlePlanner_TabPage1_SampleTextTab1, "UICheckButtonTemplate")
-   frame:ClearAllPoints();
-   frame:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_RaidIdText, "TOPLEFT", 480,12);
-   _G[frame:GetName().."Text"]:SetText("Sync")
-   frame:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Clicking checkbox will request raid configuration from other raid planners\nwho have sync enabled and will auto-sync further raid configuration edits.");
-                  GameTooltip:Show()
-                  PetBattlePlanner_RaidPlannerListDisplayActive = 1;
-
-                  if ( PetBattlePlanner_sync_enabled == 1 ) then
-                     if ( PetBattlePlanner_RaidPlannerList ~= nil ) then
-                        local charName,charFields;
-                        for charName,charFields in pairs(PetBattlePlanner_RaidPlannerList) do
-                           PetBattlePlanner_RaidPlannerList[charName].active = 0; -- clear out the database for a fresh ping result set
-                        end
-                        local selfName = GetUnitName("player",true);
-                        PetBattlePlanner_updateRaidPlannerList_active(selfName)
-                     end
-                     PetBattlePlanner_generatePingRequest()
-
-                     local tipText;
-                     tipText = PetBattlePlanner_buildRaidPlannerTooltipText()
-                     GameTooltip:SetText(tipText);
-
-                  end
-               end)
-   frame:SetChecked( PetBattlePlanner_sync_enabled == 1 )
-   frame:SetScript("OnLeave", function()
-                                 GameTooltip:Hide()
-                                 PetBattlePlanner_RaidPlannerListDisplayActive = 0;
-                              end)
-   frame:SetScript("OnClick", function(self,button)
-      if ( self:GetChecked() ) then
-         PetBattlePlanner_sync_enabled = 1
-         if ( raidPlayerDatabase ~= nil ) and
-            ( raidPlayerDatabase.textureIndex ~= nil ) then
-            SendAddonMessage(PetBattlePlanner_appSyncPrefix, PetBattlePlanner_appInstanceId..":"..
-                                                      PetBattlePlanner_syncProtocolVersion..":"..
-                                                      "SyncReq:"..
-                                                      raidPlayerDatabase.textureIndex, "GUILD" );
---print("sending sync request.");               
-         end
-      else
-         PetBattlePlanner_sync_enabled = 0;
-      end
-   end)
-
-
-   --
-   -- Create Raid Group Number selection field
-   --
-
-   local menuTbl = {
-      {
-         text = "Group Selection",
-         isTitle = true,
-         notCheckable = true,
-      },
-      {
-         text = "Group 1",
-         isTitle = false,
-         notCheckable = true,
-         func = function(self)
-            PetBattlePlanner_SetGroupNumber(1);
-            end,
-      },
-      {
-         text = "Group 2",
-         isTitle = flase,
-         notCheckable = true,
-         func = function(self)
-            PetBattlePlanner_SetGroupNumber(2);
-            end,
-      },
-      {
-         text = "Group 3",
-         isTitle = false,
-         notCheckable = true,
-         func = function(self)
-            PetBattlePlanner_SetGroupNumber(3);
-            end,
-      },
-      {
-         text = "Group 4",
-         isTitle = false,
-         notCheckable = true,
-         func = function(self)
-            PetBattlePlanner_SetGroupNumber(4);
-            end,
-      },
-   }
-
-
-   local item = PetBattlePlanner_TabPage1_SampleTextTab1:CreateFontString("PetBattlePlanner_GroupNumber_FontString", "OVERLAY", "GameFontNormalSmall" )
-   item:ClearAllPoints();
-   PetBattlePlanner_GroupNumber_FontStringObject = item;
-
-   local item = CreateFrame("Button", "PetBattlePlanner_GroupNumber_Button", PetBattlePlanner_TabPage1_SampleTextTab1 )
-   item:SetFontString( PetBattlePlanner_GroupNumber_FontStringObject )
-   item:SetWidth(25);
-   item:SetHeight(18);
-   item:SetPoint("TOPLEFT", PetBattlePlanner_TabPage1_RaidIdText, "TOPLEFT", 555,5);
-   item:SetText("Group "..PetBattlePlanner_currentGroupNumber);
-   item:SetScript("OnClick", function(self,button)
---      print("Button pushed");
-      EasyMenu(menuTbl, PetBattlePlanner_TabPage1_SampleTextTab1, "PetBattlePlanner_GroupNumber_Button" ,0,0, nil, 10)
-      end)
---   item:SetScript("OnClick", function(self,button)
---      local myText = self:GetText();
---      local startIndex1,endIndex1,playerName = strfind(myText, "c%x%x%x%x%x%x%x%x(.*)");
---      if ( playerName ~= nil ) then
---         menuTbl[1].text = playerName;
---         PetBattlePlanner_menu_playerName = playerName;
---         EasyMenu(menuTbl, PetBattlePlanner_TabPage1_SampleTextTab1, "PetBattlePlanner_PlayerName_Button_"..index-1 ,0,0, nil, 10)
---      end
---   end)
-   item:SetScript("OnEnter",
-               function(this)
-                  GameTooltip_SetDefaultAnchor(GameTooltip, this)
-                  GameTooltip:SetText("Shows currently selected group.\nClick this to bring up menu to allow group selection.\nThis is used when creating multiple groups.");
-                  GameTooltip:Show()
-               end)
-   item:SetScript("OnLeave", function() GameTooltip:Hide() end)
-   PetBattlePlanner_GroupNumber_ButtonObject = item;
+-- xxxx
 
 end
+
+
+
+
+
+
+
 
 
