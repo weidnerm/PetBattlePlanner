@@ -869,6 +869,11 @@ function PetBattlePlanner_UpdateGui()
                   PetBattlePlanner_PetInfoFrameAbilityTypeFrame[subsetIndex][abilityIndex]:SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
                   local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, enemyType);
                   PetBattlePlanner_PetInfoFrameAbilityStrengthFrame[subsetIndex][abilityIndex]:SetTexture(ATTACK_RESULT_TEXTURES[attackResult]);
+                  
+                  PetBattlePlanner_PetInfoFrameAbilityFrameButton[subsetIndex][abilityIndex].abilityID      = abilityId;
+                  PetBattlePlanner_PetInfoFrameAbilityFrameButton[subsetIndex][abilityIndex].speciesID      = speciesID;
+                  PetBattlePlanner_PetInfoFrameAbilityFrameButton[subsetIndex][abilityIndex].petID          = petID;
+                  PetBattlePlanner_PetInfoFrameAbilityFrameButton[subsetIndex][abilityIndex].additionalText = nil;
                end
                
    
@@ -1041,6 +1046,120 @@ function PetBattlePlanner_UpdateGui()
       
       
    end
+end
+
+
+
+local PET_JOURNAL_ABILITY_INFO = SharedPetBattleAbilityTooltip_GetInfoTable();
+
+
+function PET_JOURNAL_ABILITY_INFO:GetAbilityID()
+	return self.abilityID;
+end
+
+function PET_JOURNAL_ABILITY_INFO:IsInBattle()
+	return false;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetHealth(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return health;
+	else
+		--Do something with self.speciesID?
+		return self:GetMaxHealth(target);
+	end
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetMaxHealth(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return maxHealth;
+	else
+		--Do something with self.speciesID?
+		return 100;
+	end
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetAttackStat(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return power;
+	else
+		--Do something with self.speciesID?
+		return 0;
+	end
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetSpeedStat(target)
+	self:EnsureTarget(target);
+	if ( self.petID ) then
+		local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(self.petID);
+		return speed;
+	else
+		--Do something with self.speciesID?
+		return 0;
+	end
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetPetOwner(target)
+	self:EnsureTarget(target);
+	return LE_BATTLE_PET_ALLY;
+end
+
+function PET_JOURNAL_ABILITY_INFO:GetPetType(target)
+	self:EnsureTarget(target);
+	if ( not self.speciesID ) then
+		GMError("No species id found");
+		return 1;
+	end
+	local name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
+	return petType;
+end
+
+function PET_JOURNAL_ABILITY_INFO:EnsureTarget(target)
+	if ( target == "default" ) then
+		target = "self";
+	elseif ( target == "affected" ) then
+		target = "enemy";
+	end
+	if ( target ~= "self" ) then
+		GMError("Only \"self\" unit supported out of combat");
+	end
+end
+
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetAbilityID() error("UI: Unimplemented Function") end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetCooldown() return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetRemainingDuration() return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:IsInBattle() error("UI: Unimplemented Function") end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetHealth(target) return 100 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetMaxHealth(target) return 100 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetAttackStat(target) return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetSpeedStat(target) return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetState(stateID, target) return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetWeatherState(stateID) return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPadState(stateID) return 0 end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPetOwner(taget) return LE_BATTLE_PET_ALLY end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:HasAura(auraID, target) return false end
+--function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPetType(target) if ( self:IsInBattle() ) then error("UI: Unimplemented Function"); else return nil end end
+
+local journalAbilityInfo = {};
+setmetatable(journalAbilityInfo, {__index = PET_JOURNAL_ABILITY_INFO});
+function PetBattlePlanner_ShowAbilityTooltip(self, abilityID, speciesID, petID, additionalText)
+	if ( abilityID and abilityID > 0 ) then
+	   print("abilityID="..abilityID.." speciesID="..(speciesID or "nospecies").." petID="..(petID or "noPetID"));
+		journalAbilityInfo.abilityID = abilityID;
+		journalAbilityInfo.speciesID = speciesID;
+		journalAbilityInfo.petID = petID;
+		PetBattlePlannerPrimaryAbilityTooltip:ClearAllPoints();
+		PetBattlePlannerPrimaryAbilityTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 5, 0);
+		PetBattlePlannerPrimaryAbilityTooltip.anchoredTo = self;
+		SharedPetBattleAbilityTooltip_SetAbility(PetBattlePlannerPrimaryAbilityTooltip, journalAbilityInfo, additionalText);
+		PetBattlePlannerPrimaryAbilityTooltip:Show();
+	end
 end
 
 
@@ -1525,6 +1644,7 @@ function PetBattlePlanner_SetUpGuiFields()
    PetBattlePlanner_PetInfoFrameHasteIcon = {}
    PetBattlePlanner_PetInfoFrameHasteText = {}
    PetBattlePlanner_PetInfoFrameAbilityFrame = {}
+   PetBattlePlanner_PetInfoFrameAbilityFrameButton = {};
    PetBattlePlanner_PetInfoFrameAbilityTypeFrame = {}
    PetBattlePlanner_PetInfoFrameAbilityStrengthFrame = {}
    PetBattlePlanner_PetInfoFrameTypeIcon = {}
@@ -1726,6 +1846,7 @@ function PetBattlePlanner_SetUpGuiFields()
 
          local abilityIndex;
          PetBattlePlanner_PetInfoFrameAbilityFrame[frameIndex] = {};
+         PetBattlePlanner_PetInfoFrameAbilityFrameButton[frameIndex] = {};
          PetBattlePlanner_PetInfoFrameAbilityTypeFrame[frameIndex] = {};
          PetBattlePlanner_PetInfoFrameAbilityStrengthFrame[frameIndex] = {};
          
@@ -1750,6 +1871,26 @@ function PetBattlePlanner_SetUpGuiFields()
                texture:SetTexture("Interface\\ICONS\\INV_Misc_MonsterTail_05")
                texture:SetTexCoord(0, 1 ,0, 1)
                PetBattlePlanner_PetInfoFrameAbilityFrame[frameIndex][abilityIndex] = texture;
+               
+               local myButton = CreateFrame("Button", "PetBattlePlanner_PetInfoFrameAbilityFrameButton"..frameIndex..abilityIndex, PetBattlePlanner_TabPage1 )
+               myButton:SetWidth(abilityIconSize);
+               myButton:SetHeight(abilityIconSize);
+               myButton:SetPoint("TOPLEFT", PetBattlePlanner_PetInfoFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", 0,0);
+               myButton:SetScript("OnEnter",
+               
+                        function(self)
+--                           SharedPetBattleAbilityTooltip_SetAbility(PetBattlePlannerPrimaryAbilityTooltip, journalAbilityInfo, additionalText);
+--                           SharedPetBattleAbilityTooltip_SetAbility(self, 1, 1);
+
+         			   		PetBattlePlanner_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText);
+
+--                           GameTooltip_SetDefaultAnchor(GameTooltip, this)
+--                           GameTooltip:SetText("NPC ability info.");
+--                           GameTooltip:Show()xxx
+                        end)
+               myButton:SetScript("OnLeave", function() PetBattlePlannerPrimaryAbilityTooltip:Hide() end)
+               PetBattlePlanner_PetInfoFrameAbilityFrameButton[frameIndex][abilityIndex] = myButton;
+               
             end
 
             --
@@ -2184,7 +2325,14 @@ function PetBattlePlanner_SetUpGuiFields()
       PetBattlePlanner_TeamNamesFrameButton = myButton;
    end
    
-   
+   --
+   -- Set up Floating Abiltiy Tooltip frame
+   --
+   do
+      local item = CreateFrame("Frame", "PetBattlePlannerPrimaryAbilityTooltip", PetBattlePlanner_TabPage1_SampleTextTab1, "SharedPetBattleAbilityTooltipTemplate" )
+      PetBattlePlannerPrimaryAbilityTooltip = item;
+   end
+
    
    
 end
