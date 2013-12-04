@@ -15,6 +15,7 @@ local PET_OWNER_PLAYER = 1;
 local PET_OWNER_OPPONENT = 2;
 
 local PetBattlePlanner_OpponentName = "none";
+local PetBattlePlanner_OpponentPetIndex = 0;
 
 local PET_TYPE_TEXT = {
    "Humanoid",    -- 1 
@@ -417,11 +418,54 @@ end
 --   UIDropDownMenu_Initialize(self, PetBattlePlanner_SetUpNpcChooserDropDownMenuInitialize );
 --end
 
+local petMenuTbl;
+
+function PetBattlePlanner_UpdatePetListMenu()
+   local petIndex;
+   petMenuTbl = {};
+   petMenuTbl[1] = {};
+   petMenuTbl[1].text = "Pet Selection";
+   petMenuTbl[1].isTitle = true;
+   petMenuTbl[1].notCheckable = true;
+   
+   if ( PetBattlePlanner_db ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) then
+      
+      local petInfo;
+      for petIndex,petInfo in pairs(PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team) do
+         petMenuTbl[1+petIndex] = {};
+         petMenuTbl[1+petIndex].hasArrow = false;
+         petMenuTbl[1+petIndex].notCheckable = true;
+         petMenuTbl[1+petIndex].text = petInfo.Name;
+         petMenuTbl[1+petIndex].arg1 = petIndex;
+         petMenuTbl[1+petIndex].func = function(self, arg)
+            PetBattlePlanner_SetOpponentPetIndex(arg);
+            end
+      end
+   end
+end
 
 function PetBattlePlanner_SetOpponentNpcName(opponentName)
    PetBattlePlanner_OpponentName = opponentName;
    
+   PetBattlePlanner_UpdatePetListMenu();
+   
    PetBattlePlanner_UpdateGui();
+end
+
+function PetBattlePlanner_SetOpponentPetIndex(index)
+
+   if ( PetBattlePlanner_db ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[index] ~= nil ) then
+   
+      PetBattlePlanner_OpponentPetIndex = index;
+   
+      PetBattlePlanner_UpdateGui();
+   end
 end
 
 function PetBattlePlanner_UpdateGui()
@@ -431,7 +475,21 @@ function PetBattlePlanner_UpdateGui()
    else
       PetBattlePlanner_TabPage1_OpponentNPCNameFrame:SetText("unknown");      
    end
+
+
+   if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex].Name ~= nil ) then
+         
+      PetBattlePlanner_TabPage1_OpponentPetNameFrame:SetText(PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[PetBattlePlanner_OpponentPetIndex].Name);
+   else
+      PetBattlePlanner_TabPage1_OpponentPetNameFrame:SetText("unknown");      
+   end
+
+
 end
+
 
 
 function PetBattlePlanner_SetUpGuiFields()
@@ -545,13 +603,8 @@ function PetBattlePlanner_SetUpGuiFields()
       -- Set up the opponent PET chooser DropDown menu
       --
    
-      local petMenuTbl = {
-         {
-            text = "Pet Selection",
-            isTitle = true,
-            notCheckable = true,
-         }
-      }
+
+      PetBattlePlanner_UpdatePetListMenu();
 
       local item = PetBattlePlanner_TabPage1:CreateFontString("PetBattlePlanner_TabPage1_OpponentPetNameFrame", "OVERLAY", "GameFontNormalSmall" )
       item:SetWidth(200);
