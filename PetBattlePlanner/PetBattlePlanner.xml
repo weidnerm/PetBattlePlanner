@@ -101,20 +101,7 @@
             </Anchors>
             <Layers>
                <Layer level="OVERLAY">
-                   <FontString name="$parent_RaidIdPrefix" inherits="GameFontNormal" text="Raid: ">
-                       <Anchors>
-                           <Anchor point="TOPLEFT" relativeTo="$parent">
-                               <Offset>
-                                   <AbsDimension x="20" y="-40"/>
-                               </Offset>
-                           </Anchor>
-                       </Anchors>
-                   </FontString>
-                   <FontString name="$parent_RaidIdText" inherits="GameFontNormal" text="raid title">
-                      <Anchors>                                                                                          
-                         <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_RaidIdPrefix"/>    
-                      </Anchors>                                                                                         
-                   </FontString>
+
                </Layer>
             </Layers>
        <!--Background Frame-->
