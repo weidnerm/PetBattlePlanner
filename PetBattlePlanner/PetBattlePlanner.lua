@@ -1756,9 +1756,21 @@ function PetBattlePlanner_SetUpGuiFields()
             notCheckable = true,
          }
       }
-      local opponentName, menuIndex;
-      menuIndex = 2;
+      local opponentName, menuIndex, opponentInfo;
+
+      local opponentList = {};
+      local opponentIndex=1;
       for opponentName,opponentInfo in pairs(PetBattlePlanner_db["Opponents"]) do
+         opponentList[opponentIndex]=opponentName;
+         opponentIndex = opponentIndex+1;
+      end    
+      
+      table.sort(opponentList);
+
+        
+      menuIndex = 2;
+      for opponentIndex=1,#opponentList do
+         opponentName = opponentList[opponentIndex]
          menuTbl[menuIndex] = {};
          menuTbl[menuIndex].hasArrow = false;
          menuTbl[menuIndex].notCheckable = true;
