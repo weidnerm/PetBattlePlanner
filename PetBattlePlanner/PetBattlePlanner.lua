@@ -571,6 +571,8 @@ function PetBattlePlanner_Slash_Handler(msg)
       PetBattlePlanner_MainForm:SetPoint("CENTER", UIParent, "CENTER",0,0)
    elseif (msg == "reset") then
       PetBattlePlanner_ResetDB();
+   elseif (msg == "setteam") then
+      PetBattlePlanner_SetCurrentTeam();
    elseif (msg == "dbfix") then
       PetBattlePlanner_FixDB();
    elseif (msg == "report") then
