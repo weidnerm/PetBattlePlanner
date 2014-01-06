@@ -115,102 +115,102 @@ local REORDER_ABILITIES_IN_PAIRS = {
 
 local NON_DAMAGE_ABILITY_LIST = 
 {
-	[188] = true,     -- name:"Accuracy"               type:2}
-	[197] = true,     -- name:"Adrenal Glands"         type:5}
-	[667] = true,     -- name:"Aged Yolk"              type:0}
-	[488] = true,     -- name:"Amplify Magic"          type:5}
-	[611] = true,     -- name:"Ancient Blessing"       type:1}
-	[519] = true,     -- name:"Apocalypse"             type:4}
-	[964] = true,     -- name:"Autumn Breeze"          type:6}
-	[348] = true,     -- name:"Bash"                   type:7}
-	[325] = true,     -- name:"Beaver Dam"             type:4}
-	[919] = true,     -- name:"Black Claw"             type:7}
-	[227] = true,     -- name:"Blackout Kick"          type:0}
-	[539] = true,     -- name:"Bleat"                  type:4}
-	[934] = true,     -- name:"Bubble"                 type:0}
-	[578] = true,     -- name:"Buried Treasure"        type:4}
-	[173] = true,     -- name:"Cauterize"              type:6}
-	[936] = true,     -- name:"Caw"                    type:2}
-	[230] = true,     -- name:"Cleansing Rain"         type:8}
-	[350] = true,     -- name:"Clobber"                type:0}
-	[665] = true,     -- name:"Consume Corpse"         type:3}
-	[932] = true,     -- name:"Croak"                  type:8}
-	[165] = true,     -- name:"Crouch"                 type:4}
-	[263] = true,     -- name:"Crystal Overload"       type:6}
-	[569] = true,     -- name:"Crystal Prison"         type:7}
-	[905] = true,     -- name:"Cute Face"              type:0}
-	[794] = true,     -- name:"Dark Rebirth"           type:6}
-	[476] = true,     -- name:"Dark Simulacrum"        type:3}
-	[366] = true,     -- name:"Dazzling Dance"         type:4}
-	[334] = true,     -- name:"Decoy"                  type:9}
-	[490] = true,     -- name:"Deflection"             type:0}
-	[312] = true,     -- name:"Dodge"                  type:0}
-	[835] = true,     -- name:"Eggnog"                 type:0}
-	[598] = true,     -- name:"Emerald Dream"          type:1}
-	[597] = true,     -- name:"Emerald Presence"       type:1}
-	[440] = true,     -- name:"Evanescence"            type:5}
-	[305] = true,     -- name:"Exposed Wounds"         type:7}
-	[392] = true,     -- name:"Extra Plating"          type:9}
-	[568] = true,     -- name:"Feign Death"            type:7}
-	[426] = true,     -- name:"Focus"                  type:0}
-	[223] = true,     -- name:"Focus Chi"              type:0}
-	[580] = true,     -- name:"Food Coma"              type:4}
-	[521] = true,     -- name:"Hawk Eye"               type:2}
-	[168] = true,     -- name:"Healing Flame"          type:1}
-	[922] = true,     -- name:"Healing Stream"         type:8}
-	[123] = true,     -- name:"Healing Wave"           type:8}
-	[279] = true,     -- name:"Heartbroken"            type:9}
-	[945] = true,     -- name:"Heat Up"                type:6}
-	[247] = true,     -- name:"Hibernate"              type:7}
-	[941] = true,     -- name:"High Fiber"             type:0}
-	[766] = true,     -- name:"Holy Justice"           type:0}
-	[362] = true,     -- name:"Howl"                   type:7}
-	[479] = true,     -- name:"Ice Barrier"            type:6}
-	[465] = true,     -- name:"Illusionary Barrier"    type:5}
-	[216] = true,     -- name:"Inner Vision"           type:5}
-	[298] = true,     -- name:"Inspiring Song"         type:6}
-	[259] = true,     -- name:"Invisibility"           type:5}
-	[431] = true,     -- name:"Jadeskin"               type:5}
-	[277] = true,     -- name:"Life Exchange"          type:5}
-	[906] = true,     -- name:"Lightning Shield"       type:6}
-	[776] = true,     -- name:"Love Potion"            type:0}
-	[772] = true,     -- name:"Lovestruck"             type:0}
-	[757] = true,     -- name:"Lucky Dance"            type:4}
-	[314] = true,     -- name:"Mangle"                 type:7}
-	[573] = true,     -- name:"Nature's Touch"         type:4}
-	[574] = true,     -- name:"Nature's Ward"          type:6}
-	[522] = true,     -- name:"Nevermore"              type:2}
-	[576] = true,     -- name:"Perk Up"                type:4}
-	[764] = true,     -- name:"Phase Shift"            type:5}
-	[268] = true,     -- name:"Photosynthesis"         type:6}
-	[303] = true,     -- name:"Plant"                  type:6}
-	[444] = true,     -- name:"Prismatic Barrier"      type:5}
-	[536] = true,     -- name:"Prowl"                  type:7}
-	[533] = true,     -- name:"Rebuild"                type:9}
-	[511] = true,     -- name:"Renewing Mists"         type:8}
-	[278] = true,     -- name:"Repair"                 type:9}
-	[770] = true,     -- name:"Restoration"            type:0}
-	[763] = true,     -- name:"Sear Magic"             type:5}
-	[310] = true,     -- name:"Shell Shield"           type:7}
-	[760] = true,     -- name:"Shield Block"           type:0}
-	[330] = true,     -- name:"Sons of the Flame"      type:6}
-	[497] = true,     -- name:"Soothe"                 type:4}
-	[396] = true,     -- name:"Soothing Mists"         type:6}
-	[751] = true,     -- name:"Soul Ward"              type:0}
-	[315] = true,     -- name:"Spiked Skin"            type:1}
-	[914] = true,     -- name:"Spirit Spikes"          type:5}
-	[225] = true,     -- name:"Staggered Steps"        type:0}
-	[527] = true,     -- name:"Stench"                 type:4}
-	[791] = true,     -- name:"Stimpack"               type:5}
-	[436] = true,     -- name:"Stoneskin"              type:5}
-	[208] = true,     -- name:"Supercharge"            type:9}
-	[283] = true,     -- name:"Survival"               type:4}
-	[318] = true,     -- name:"Thorns"                 type:6}
-	[254] = true,     -- name:"Tranquility"            type:4}
-	[960] = true,     -- name:"Trihorn Shield"         type:7}
-	[252] = true,     -- name:"Uncanny Luck"           type:4}
-	[592] = true,     -- name:"Wild Magic"             type:5}
-	[273] = true      -- name:"Wish"                   type:5}
+   [188] = true,     -- name:"Accuracy"               type:2}
+   [197] = true,     -- name:"Adrenal Glands"         type:5}
+   [667] = true,     -- name:"Aged Yolk"              type:0}
+   [488] = true,     -- name:"Amplify Magic"          type:5}
+   [611] = true,     -- name:"Ancient Blessing"       type:1}
+   [519] = true,     -- name:"Apocalypse"             type:4}
+   [964] = true,     -- name:"Autumn Breeze"          type:6}
+   [348] = true,     -- name:"Bash"                   type:7}
+   [325] = true,     -- name:"Beaver Dam"             type:4}
+   [919] = true,     -- name:"Black Claw"             type:7}
+   [227] = true,     -- name:"Blackout Kick"          type:0}
+   [539] = true,     -- name:"Bleat"                  type:4}
+   [934] = true,     -- name:"Bubble"                 type:0}
+   [578] = true,     -- name:"Buried Treasure"        type:4}
+   [173] = true,     -- name:"Cauterize"              type:6}
+   [936] = true,     -- name:"Caw"                    type:2}
+   [230] = true,     -- name:"Cleansing Rain"         type:8}
+   [350] = true,     -- name:"Clobber"                type:0}
+   [665] = true,     -- name:"Consume Corpse"         type:3}
+   [932] = true,     -- name:"Croak"                  type:8}
+   [165] = true,     -- name:"Crouch"                 type:4}
+   [263] = true,     -- name:"Crystal Overload"       type:6}
+   [569] = true,     -- name:"Crystal Prison"         type:7}
+   [905] = true,     -- name:"Cute Face"              type:0}
+   [794] = true,     -- name:"Dark Rebirth"           type:6}
+   [476] = true,     -- name:"Dark Simulacrum"        type:3}
+   [366] = true,     -- name:"Dazzling Dance"         type:4}
+   [334] = true,     -- name:"Decoy"                  type:9}
+   [490] = true,     -- name:"Deflection"             type:0}
+   [312] = true,     -- name:"Dodge"                  type:0}
+   [835] = true,     -- name:"Eggnog"                 type:0}
+   [598] = true,     -- name:"Emerald Dream"          type:1}
+   [597] = true,     -- name:"Emerald Presence"       type:1}
+   [440] = true,     -- name:"Evanescence"            type:5}
+   [305] = true,     -- name:"Exposed Wounds"         type:7}
+   [392] = true,     -- name:"Extra Plating"          type:9}
+   [568] = true,     -- name:"Feign Death"            type:7}
+   [426] = true,     -- name:"Focus"                  type:0}
+   [223] = true,     -- name:"Focus Chi"              type:0}
+   [580] = true,     -- name:"Food Coma"              type:4}
+   [521] = true,     -- name:"Hawk Eye"               type:2}
+   [168] = true,     -- name:"Healing Flame"          type:1}
+   [922] = true,     -- name:"Healing Stream"         type:8}
+   [123] = true,     -- name:"Healing Wave"           type:8}
+   [279] = true,     -- name:"Heartbroken"            type:9}
+   [945] = true,     -- name:"Heat Up"                type:6}
+   [247] = true,     -- name:"Hibernate"              type:7}
+   [941] = true,     -- name:"High Fiber"             type:0}
+   [766] = true,     -- name:"Holy Justice"           type:0}
+   [362] = true,     -- name:"Howl"                   type:7}
+   [479] = true,     -- name:"Ice Barrier"            type:6}
+   [465] = true,     -- name:"Illusionary Barrier"    type:5}
+   [216] = true,     -- name:"Inner Vision"           type:5}
+   [298] = true,     -- name:"Inspiring Song"         type:6}
+   [259] = true,     -- name:"Invisibility"           type:5}
+   [431] = true,     -- name:"Jadeskin"               type:5}
+   [277] = true,     -- name:"Life Exchange"          type:5}
+   [906] = true,     -- name:"Lightning Shield"       type:6}
+   [776] = true,     -- name:"Love Potion"            type:0}
+   [772] = true,     -- name:"Lovestruck"             type:0}
+   [757] = true,     -- name:"Lucky Dance"            type:4}
+   [314] = true,     -- name:"Mangle"                 type:7}
+   [573] = true,     -- name:"Nature's Touch"         type:4}
+   [574] = true,     -- name:"Nature's Ward"          type:6}
+   [522] = true,     -- name:"Nevermore"              type:2}
+   [576] = true,     -- name:"Perk Up"                type:4}
+   [764] = true,     -- name:"Phase Shift"            type:5}
+   [268] = true,     -- name:"Photosynthesis"         type:6}
+   [303] = true,     -- name:"Plant"                  type:6}
+   [444] = true,     -- name:"Prismatic Barrier"      type:5}
+   [536] = true,     -- name:"Prowl"                  type:7}
+   [533] = true,     -- name:"Rebuild"                type:9}
+   [511] = true,     -- name:"Renewing Mists"         type:8}
+   [278] = true,     -- name:"Repair"                 type:9}
+   [770] = true,     -- name:"Restoration"            type:0}
+   [763] = true,     -- name:"Sear Magic"             type:5}
+   [310] = true,     -- name:"Shell Shield"           type:7}
+   [760] = true,     -- name:"Shield Block"           type:0}
+   [330] = true,     -- name:"Sons of the Flame"      type:6}
+   [497] = true,     -- name:"Soothe"                 type:4}
+   [396] = true,     -- name:"Soothing Mists"         type:6}
+   [751] = true,     -- name:"Soul Ward"              type:0}
+   [315] = true,     -- name:"Spiked Skin"            type:1}
+   [914] = true,     -- name:"Spirit Spikes"          type:5}
+   [225] = true,     -- name:"Staggered Steps"        type:0}
+   [527] = true,     -- name:"Stench"                 type:4}
+   [791] = true,     -- name:"Stimpack"               type:5}
+   [436] = true,     -- name:"Stoneskin"              type:5}
+   [208] = true,     -- name:"Supercharge"            type:9}
+   [283] = true,     -- name:"Survival"               type:4}
+   [318] = true,     -- name:"Thorns"                 type:6}
+   [254] = true,     -- name:"Tranquility"            type:4}
+   [960] = true,     -- name:"Trihorn Shield"         type:7}
+   [252] = true,     -- name:"Uncanny Luck"           type:4}
+   [592] = true,     -- name:"Wild Magic"             type:5}
+   [273] = true      -- name:"Wish"                   type:5}
 }
 
 local DAMAGE_ABILITY_LIST = 
@@ -578,14 +578,21 @@ function PetBattlePlanner_Slash_Handler(msg)
    elseif (msg == "report") then
       PetBattlePlanner_GenerateReport();
       print("Report generation complete");
-   elseif (msg == "test") then
-      print("Got to test");
-      local lastTargetName = GetUnitName("target");
-   
-      if ( PetBattlePlanner_lastTargetName ) then
-         PetBattlePlanner_lastTargetName = lastTargetName;
-         print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
-      end
+   elseif (msg == "test1") then
+      print("Got to test1");
+      
+      -- for unborn valkyr abilities
+      C_PetJournal.SetAbility(1, 1, 210);-- Shadow Slash    210
+      C_PetJournal.SetAbility(1, 2, 218);-- curse of doom 218
+      C_PetJournal.SetAbility(1, 3, 321);-- unholy ascension 321
+
+   elseif (msg == "test2") then
+      print("Got to test2");
+      
+      C_PetJournal.SetAbility(1, 1, 422);-- shadow shock 422
+      C_PetJournal.SetAbility(1, 2, 212);-- siphon life 212
+      C_PetJournal.SetAbility(1, 3, 652);-- haunt 652
+
    else
       print(green.."PetBattlePlanner:"..white.." Arguments to "..yellow.."/rm");
       print(yellow.." show - "..white.."Shows the main window.");
@@ -656,7 +663,7 @@ function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
       if ( PetBattlePlanner_db["Opponents"] == nil ) then PetBattlePlanner_db["Opponents"] = {}; end
       
       -- determine lowest pet rarity.  we want to only track trainer with good pets.
-      if ( PetBattlePlanner_GetLowestRarity() >= 4 ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
+      if ( PetBattlePlanner_GetLowestRarity() >= 5 ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
          local numPets = C_PetBattles.GetNumPets(PET_OWNER_OPPONENT);
 
          print("Battling "..PetBattlePlanner_lastTargetName);
@@ -899,24 +906,26 @@ function PetBattlePlanner_GenerateReport()
       local worstAttackVsMe = ATTACK_WEAK;
       local enemyName = PetBattlePlanner_OpponentName;
       for abilityIndex = 1, 3 do
-         local abilityID = PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["AbilityList"][abilityIndex];
-         local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityID)
-         
-         outputLine = outputLine.."      "..PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["Name"]
-         outputLine = outputLine.."->"..abilityName.."("..PET_TYPE_TEXT[abilityPetType]..")"
-         
-         if (NON_DAMAGE_ABILITY_LIST[abilityID] == true) then -- only consider damage abilities.
-	         outputLine = outputLine.." is ignored since it does no damage";	         
-	      else
-         
-	         local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, petType);
-	         outputLine = outputLine.." is "..ATTACK_RESULT_TEXT[attackResult].." vs me("..PET_TYPE_TEXT[petType]..")";
-	         if ( attackResult > worstAttackVsMe ) then
-	            worstAttackVsMe = attackResult;
-	         end
+         if ( PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["AbilityList"][abilityIndex] ~= nil ) then
+            local abilityID = PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["AbilityList"][abilityIndex];
+            local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityID)
+            
+            outputLine = outputLine.."      "..PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["Name"]
+            outputLine = outputLine.."->"..abilityName.."("..PET_TYPE_TEXT[abilityPetType]..")"
+            
+            if (NON_DAMAGE_ABILITY_LIST[abilityID] == true) then -- only consider damage abilities.
+               outputLine = outputLine.." is ignored since it does no damage";            
+            else
+            
+               local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, petType);
+               outputLine = outputLine.." is "..ATTACK_RESULT_TEXT[attackResult].." vs me("..PET_TYPE_TEXT[petType]..")";
+               if ( attackResult > worstAttackVsMe ) then
+                  worstAttackVsMe = attackResult;
+               end
+            end
+            
+            printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
          end
-         
-         printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
       end
 
       --
@@ -938,15 +947,15 @@ function PetBattlePlanner_GenerateReport()
             local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID(abilityId)
             outputLine = outputLine.."      "..abilityName.."("..PET_TYPE_TEXT[abilityPetType]..")"
    
-	         if ( NON_DAMAGE_ABILITY_LIST[abilityId] == true) then -- only consider damage abilities.
-		         outputLine = outputLine.." is ignored since it does no damage";	         
-		      else
-	            local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["PetType"]);
-	            if ( attackResult > bestAttackVsHim ) then
-	               bestAttackVsHim = attackResult;
-	            end
-	            outputLine = outputLine.." is "..ATTACK_RESULT_TEXT[attackResult]
-	         end
+            if ( NON_DAMAGE_ABILITY_LIST[abilityId] == true) then -- only consider damage abilities.
+               outputLine = outputLine.." is ignored since it does no damage";            
+            else
+               local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, PetBattlePlanner_db["Opponents"][enemyName]["Team"][PetBattlePlanner_OpponentPetIndex]["PetType"]);
+               if ( attackResult > bestAttackVsHim ) then
+                  bestAttackVsHim = attackResult;
+               end
+               outputLine = outputLine.." is "..ATTACK_RESULT_TEXT[attackResult]
+            end
    
             printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
          
@@ -1087,6 +1096,18 @@ function PetBattlePlanner_SetCurrentTeam()
          reportText = reportText..formattedInfo;
          
          C_PetJournal.SetPetLoadOutInfo(slotIndex,petGUID);
+         
+         -- set the ability list
+         local abilityIndex;
+         for abilityIndex = 1,3 do
+            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= 0 ) then
+               C_PetJournal.SetAbility(slotIndex, abilityIndex, PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex]);
+               formattedInfo = string.format("%s%d,",white,PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] )
+               reportText = reportText..formattedInfo;
+            end
+         end
       end
    end
    print(reportText)
@@ -1452,38 +1473,37 @@ function PetBattlePlanner_UpdateGui()
          local loopIndex
          for loopIndex=1,3 do
 
-	         if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex] ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Id ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Name ~= nil ) then
-	               
+            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex] ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Id ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Name ~= nil ) then
+                  
                local myTeamMember = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex];
-	           
+              
                local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(myTeamMember.Id)
                local health, maxHealth, power, speed, rarity;
-	            if ( myTeamMember.Id ~= nil ) then
-	                health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(myTeamMember.Id);
-	            end      
+               if ( myTeamMember.Id ~= nil ) then
+                   health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(myTeamMember.Id);
+               end      
 
-	            local formattedInfo = string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],myTeamMember.Name );               
-	            
-	            PetBattlePlanner_TeamListPetInfoFrameName[loopIndex]         :SetText(formattedInfo);
-	            PetBattlePlanner_TeamListPetInfoFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, health) );
-	            PetBattlePlanner_TeamListPetInfoFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, power) );
-	            PetBattlePlanner_TeamListPetInfoFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, speed) );
-	            PetBattlePlanner_TeamListPetPortraitFrameTexture[loopIndex]  :SetTexture(icon)
-	            PetBattlePlanner_TeamListPetPortraitFrame[loopIndex]  :Show();
-	            PetBattlePlanner_TeamListPetInfoFrameTypeIcon[loopIndex]     :SetTexture(PET_TYPE_TEXTURES[petType])
-	            
-	            
-					local idTable, levelTable = C_PetJournal.GetPetAbilityList(speciesID);
+               local formattedInfo = string.format("%s%d %s%s",yellow,level,  RARITY_COLOR[rarity],myTeamMember.Name );               
+               
+               PetBattlePlanner_TeamListPetInfoFrameName[loopIndex]         :SetText(formattedInfo);
+               PetBattlePlanner_TeamListPetInfoFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, health) );
+               PetBattlePlanner_TeamListPetInfoFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, power) );
+               PetBattlePlanner_TeamListPetInfoFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, speed) );
+               PetBattlePlanner_TeamListPetPortraitFrameTexture[loopIndex]  :SetTexture(icon)
+               PetBattlePlanner_TeamListPetPortraitFrame[loopIndex]  :Show();
+               PetBattlePlanner_TeamListPetInfoFrameTypeIcon[loopIndex]     :SetTexture(PET_TYPE_TEXTURES[petType])
+               
+               
+               local idTable, levelTable = C_PetJournal.GetPetAbilityList(speciesID);
 
-					local abilityIndex,abilityId;
-					for abilityIndex = 1,6 do
+               local abilityIndex,abilityId;
+               for abilityIndex = 1,6 do
                   local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( idTable[REORDER_ABILITIES_IN_PAIRS[abilityIndex]] )
---	               local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( abilityId )
-	               PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[loopIndex][abilityIndex]            :SetTexture(abilityIcon);
-	               PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame[loopIndex][abilityIndex]        :SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
+                  PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[loopIndex][abilityIndex]            :SetTexture(abilityIcon);
+                  PetBattlePlanner_TeamListPetInfoFrameAbilityTypeFrame[loopIndex][abilityIndex]        :SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
 
                   local enemyIndex = PetBattlePlanner_GetEnemyIndex(loopIndex)
                   local attackResult = PetBattlePlanner_GetAttackStrength(abilityPetType, PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[enemyIndex].PetType);
@@ -1494,12 +1514,26 @@ function PetBattlePlanner_UpdateGui()
                   PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton[loopIndex][abilityIndex].petID          = myTeamMember.Id;
                   PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton[loopIndex][abilityIndex].additionalText = nil;
 
-	            end               
-				else
-				   -- hide fields.
-	            PetBattlePlanner_TeamListPetPortraitFrame[loopIndex]  :Hide();
-				   
-				end
+                  
+                  local abilityLoopIndex;
+                  for abilityLoopIndex = 1,3 do
+                     if ( myTeamMember.AbilityList ~= nil ) and
+                        ( myTeamMember.AbilityList[abilityLoopIndex] ~= nil ) and
+                        ( myTeamMember.AbilityList[abilityLoopIndex] == abilityId ) then
+                        PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame[loopIndex][abilityIndex]:Show();
+                        break;
+                     else
+                           PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame[loopIndex][abilityIndex]:Hide();
+                     end
+                  end
+
+
+               end               
+            else
+               -- hide fields.
+               PetBattlePlanner_TeamListPetPortraitFrame[loopIndex]  :Hide();
+               
+            end
          end
       end
       
@@ -1510,29 +1544,29 @@ function PetBattlePlanner_UpdateGui()
       do
          local loopIndex
          for loopIndex=1,3 do
-	         if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex] ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Name ~= nil ) and
-	            ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].PairedWith ~= nil ) then
+            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex] ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Name ~= nil ) and
+               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].PairedWith ~= nil ) then
 
                local enemyIndex = PetBattlePlanner_GetEnemyIndex(loopIndex)
-	            local enemyTeamMember = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[enemyIndex]
-	            
-	            local formattedInfo = string.format("%s%d %s%s",yellow,enemyTeamMember.Level,  RARITY_COLOR[enemyTeamMember.Rarity],enemyTeamMember.Name );               
-	            
-	            PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[loopIndex]         :SetText(formattedInfo);
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, enemyTeamMember.Health) );
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, enemyTeamMember.Power) );
-	            PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, enemyTeamMember.Speed) );
-	            PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture[loopIndex]       :SetTexture(enemyTeamMember.Icon)
-	            PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[loopIndex]         :Show();
-	            PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon[loopIndex]      :SetTexture(PET_TYPE_TEXTURES[enemyTeamMember.PetType])
-	            
-	            local abilityIndex;
-	            for abilityIndex = 1,3 do
-	               local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( enemyTeamMember.AbilityList[abilityIndex] )
-	               PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture[loopIndex][abilityIndex]       :SetTexture(abilityIcon);
-	               PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeTexture[loopIndex][abilityIndex]        :SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
+               local enemyTeamMember = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[enemyIndex]
+               
+               local formattedInfo = string.format("%s%d %s%s",yellow,enemyTeamMember.Level,  RARITY_COLOR[enemyTeamMember.Rarity],enemyTeamMember.Name );               
+               
+               PetBattlePlanner_EnemyTeamPetInfoFrameEnemyName[loopIndex]         :SetText(formattedInfo);
+               PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[loopIndex]   :SetText( string.format("%s%d",white, enemyTeamMember.Health) );
+               PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPwrText[loopIndex]:SetText( string.format("%s%d",white, enemyTeamMember.Power) );
+               PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHasteText[loopIndex]    :SetText( string.format("%s%d",white, enemyTeamMember.Speed) );
+               PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture[loopIndex]       :SetTexture(enemyTeamMember.Icon)
+               PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[loopIndex]         :Show();
+               PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon[loopIndex]      :SetTexture(PET_TYPE_TEXTURES[enemyTeamMember.PetType])
+               
+               local abilityIndex;
+               for abilityIndex = 1,3 do
+                  local abilityId, abilityName, abilityIcon, abilitymaxCooldown, abilityunparsedDescription, abilitynumTurns, abilityPetType, abilitynoStrongWeakHints = C_PetBattles.GetAbilityInfoByID( enemyTeamMember.AbilityList[abilityIndex] )
+                  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameTexture[loopIndex][abilityIndex]       :SetTexture(abilityIcon);
+                  PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeTexture[loopIndex][abilityIndex]        :SetTexture(PET_TYPE_TEXTURES[abilityPetType]);
 
                   local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[loopIndex].Id)
 
@@ -1547,14 +1581,14 @@ function PetBattlePlanner_UpdateGui()
                   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[loopIndex][abilityIndex].petID          = nil;
                   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[loopIndex][abilityIndex].additionalText = nil;
                   PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityFrameButton[loopIndex][abilityIndex].attackPower    = enemyPower;
-         
 
 
-	            end               
-				else
-	            PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[loopIndex]         :Hide();
-				   
-				end
+
+               end               
+            else
+               PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[loopIndex]         :Hide();
+               
+            end
          end
       end
 
@@ -1573,8 +1607,8 @@ function PetBattlePlanner_GetEnemyIndex(myTeamIndex)
          
          ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[myTeamIndex].PairedWith == 
            PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[loopIndex].Name ) then
-           	
-			return loopIndex;
+              
+         return loopIndex;
       end
    end
 end
@@ -1583,7 +1617,7 @@ end
 --   local myTeamIndex;
 --   
 --   if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[enemyTeamIndex] == nil)
---   	  enemyTeamIndex = 1;
+--        enemyTeamIndex = 1;
 --   end
 --  
 --   local displaySlotIndex = 0;
@@ -1595,8 +1629,8 @@ end
 --         
 --         ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[myTeamIndex].PairedWith == 
 --           PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].Team[enemyTeamIndex].Name ) then
---           	
---			   return displaySlotIndex;
+--              
+--            return displaySlotIndex;
 --      end
 --   end
 --end
@@ -2878,6 +2912,8 @@ function PetBattlePlanner_SetUpGuiFields()
    PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame = {};
    PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthTexture = {};
    PetBattlePlanner_TeamListPetInfoFrameTypeIcon = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame = {};
+   PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrameTexture = {};
    PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame = {};
    PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture = {};
    PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon = {};
@@ -3109,7 +3145,10 @@ function PetBattlePlanner_SetUpGuiFields()
          PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeFrame[frameIndex] = {};
          PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityTypeTexture[frameIndex] = {};
          PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthFrame[frameIndex] = {};       
-         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthTexture[frameIndex] = {};       
+         PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAbilityStrengthTexture[frameIndex] = {};
+         PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame[frameIndex] = {};
+         PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrameTexture[frameIndex] = {};
+
         
          local abilityIconSize = 32
          
@@ -3143,6 +3182,14 @@ function PetBattlePlanner_SetUpGuiFields()
                      PetBattlePlanner_ShowAbilityTooltip(self, self.abilityID, self.speciesID, self.petID, self.additionalText);
                   end)
                myButton:SetScript("OnLeave", function() PetBattlePlannerPrimaryAbilityTooltip:Hide() end)
+               
+               myButton:SetScript("OnClick",
+                  function(self,button,down)
+                     PetBattlePlanner_HandleAbilitySelection(self.abilityID, self.abilitySlot, self.teamSlot)
+                  end)
+
+               myButton.abilitySlot = math.floor((abilityIndex+1)/2);
+               myButton.teamSlot    = frameIndex;
                PetBattlePlanner_TeamListPetInfoFrameAbilityFrameButton[frameIndex][abilityIndex] = myButton;
                
             end
@@ -3181,6 +3228,25 @@ function PetBattlePlanner_SetUpGuiFields()
                PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthFrame[frameIndex][abilityIndex] = item;
                PetBattlePlanner_TeamListPetInfoFrameAbilityStrengthTexture[frameIndex][abilityIndex] = texture;
             end
+            
+            --
+            -- set up Selection Box Frame
+            --
+            do
+               local item = CreateFrame("Frame", "PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame"..frameIndex..abilityIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+               item:SetWidth(40)
+               item:SetHeight(40)
+               item:SetFrameLevel( item:GetFrameLevel() +10 );
+               item:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameAbilityFrame[frameIndex][abilityIndex], "TOPLEFT", -5,5)
+               PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame[frameIndex][abilityIndex] = item;
+               local texture = item:CreateTexture("PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrameTexture1"..frameIndex..abilityIndex)
+               texture:SetAllPoints()
+               texture:SetTexture("Interface\\PetBattles\\PetBattleHud")
+               texture:SetTexCoord(0.916 , 0.9795 ,0.4531 , 0.582 );
+               PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrameTexture[frameIndex][abilityIndex] = texture;
+               item:Hide();
+            end            
+            
          end
          
          --
@@ -3200,23 +3266,6 @@ function PetBattlePlanner_SetUpGuiFields()
             PetBattlePlanner_TeamListPetInfoFrameTypeIcon[frameIndex] = texture;
          end
          
---         --
---         -- set up Selection Box Frame
---         --
---         do
---            local item = CreateFrame("Frame", "PetBattlePlanner_PetInfoFrameSelectionBoxTexture"..frameIndex, PetBattlePlanner_PetPortraitFrame[frameIndex] )
---            item:SetWidth(400)
---            item:SetHeight(75)
---            item:SetFrameLevel( item:GetFrameLevel() +10 );
---            item:SetPoint("TOPLEFT", PetBattlePlanner_PetPortraitFrameTexture[frameIndex], "TOPLEFT", -12,12)
---            PetBattlePlanner_PetInfoFrameSelectionBoxFrame[frameIndex] = item;
---            local texture = item:CreateTexture("PetBattlePlanner_PetInfoFrameTypeIconTexture"..frameIndex)
---            texture:SetAllPoints()
---            texture:SetTexture("Interface\\PetBattles\\PetBattleHud")
---            texture:SetTexCoord(0.5625, 0.7285 ,0.7656, 0.8516)
---            PetBattlePlanner_PetInfoFrameSelectionBoxTexture[frameIndex] = texture;
---            item:Hide();
---         end
          
       --
       -- Set up Enemy information
@@ -3367,10 +3416,10 @@ function PetBattlePlanner_SetUpGuiFields()
             PetBattlePlanner_EnemyTeamPetInfoEnemyFrameHealthText[frameIndex] = item;
          end
    
- 				--
- 				-- set up Enemy Attack power icon
- 				--
- 				do
+             --
+             -- set up Enemy Attack power icon
+             --
+             do
             local item = CreateFrame("Frame", "PetBattlePlanner_EnemyTeamPetInfoEnemyFrameAttackPowerIcon"..frameIndex, PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame[frameIndex] )
             item:SetWidth(18)
             item:SetHeight(18)
@@ -3467,3 +3516,25 @@ function PetBattlePlanner_buildPlayerListSort(inputList)
    return playerList;
 
 end
+
+
+function PetBattlePlanner_HandleAbilitySelection(abilityID,abilitySlot,slotIndex)
+
+   if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] ~= nil ) then
+   
+      -- create the structure if necessary
+      if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList == nil ) then
+         PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList = {};
+      end
+      
+      -- store the selected ability in the database      
+      PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilitySlot] = abilityID;
+   
+      -- redraw the screen so the changes are visible.
+      PetBattlePlanner_UpdateGui();
+   end
+
+end
+
+
+
