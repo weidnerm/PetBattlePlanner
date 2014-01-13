@@ -859,18 +859,18 @@ function PetBattlePlanner_GenerateReport()
    PetBattlePlanner_db["Report"] = {};
    PetBattlePlanner_PetInfoFrameSlider:SetValue(1);
 
-   local printOut = PetBattlePlanner_db["Report"];
+--   local printOut = PetBattlePlanner_db["Report"];
    
    local myNumPets;
    local myPetIndex;
    local outputIndex = 1;
    local outputLine = "";
    
-   printOut[outputIndex] = "Report of pet info";
+--   printOut[outputIndex] = "Report of pet info";
    outputIndex = outputIndex+1;
    
    myNumPets, myNumOwned = C_PetJournal.GetNumPets();
-   printOut[outputIndex] = "Total pets = "..myNumPets.."  Owned Pets = "..myNumOwned;
+--   printOut[outputIndex] = "Total pets = "..myNumPets.."  Owned Pets = "..myNumOwned;
    outputIndex = outputIndex+1;
    
    for myPetIndex=1, myNumPets do
@@ -893,14 +893,14 @@ function PetBattlePlanner_GenerateReport()
          outputLine = outputLine.."owned=No  "
       end
 
-      printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
+--      printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
 
      
       --
       -- defensive
       --
 
-      printOut[outputIndex] = "   Defensive info";   outputIndex = outputIndex+1;        outputLine = "";
+--      printOut[outputIndex] = "   Defensive info";   outputIndex = outputIndex+1;        outputLine = "";
       
       local abilityIndex
       local worstAttackVsMe = ATTACK_WEAK;
@@ -924,7 +924,7 @@ function PetBattlePlanner_GenerateReport()
                end
             end
             
-            printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
+--            printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
          end
       end
 
@@ -932,7 +932,7 @@ function PetBattlePlanner_GenerateReport()
       -- Offensive
       --
      
-      printOut[outputIndex] = "   Offensive info";      outputIndex = outputIndex+1;       outputLine = "";
+--      printOut[outputIndex] = "   Offensive info";      outputIndex = outputIndex+1;       outputLine = "";
 
       local abilityIndex
       local bestAttackVsHim = ATTACK_WEAK;
@@ -957,7 +957,7 @@ function PetBattlePlanner_GenerateReport()
                outputLine = outputLine.." is "..ATTACK_RESULT_TEXT[attackResult]
             end
    
-            printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
+--            printOut[outputIndex] = outputLine;        outputIndex = outputIndex+1;       outputLine = "";
          
 
 
@@ -971,8 +971,8 @@ function PetBattlePlanner_GenerateReport()
       -- Summary
       --
       
-      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")("..level..")("..RARITY_TEXT[rarity]..")";   outputIndex = outputIndex+1;       outputLine = "";
---      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")";   outputIndex = outputIndex+1;       outputLine = "";
+--      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")("..level..")("..RARITY_TEXT[rarity]..")";   outputIndex = outputIndex+1;       outputLine = "";
+----      printOut[outputIndex] = "   Summary("..OFFENSE_RESULT_RATING_TEXT[bestAttackVsHim ]..","..DEFENSE_RESULT_RATING_TEXT[worstAttackVsMe]..")";   outputIndex = outputIndex+1;       outputLine = "";
       
 
       PetBattlePlanner_UpdatePetLocalDB(myPetIndex, level ,rarity, owned, canBattle, bestAttackVsHim, worstAttackVsMe)
