@@ -569,6 +569,8 @@ function PetBattlePlanner_Slash_Handler(msg)
    elseif (msg == "center") then
       PetBattlePlanner_MainForm:ClearAllPoints()
       PetBattlePlanner_MainForm:SetPoint("CENTER", UIParent, "CENTER",0,0)
+   elseif (msg == "auc") then
+      PetBattlePlanner_EvaluateAuctions();
    elseif (msg == "reset") then
       PetBattlePlanner_ResetDB();
    elseif (msg == "setteam") then
@@ -604,6 +606,76 @@ function PetBattlePlanner_Slash_Handler(msg)
 
 
 end
+
+function PetBattlePlanner_EvaluateAuctions()
+   
+--   local itemClasses = { GetAuctionItemClasses() };
+--   if #itemClasses > 0 then
+--     local classNum, itemClass;
+--     for classNum, itemClass in pairs(itemClasses) do
+--       print("["..classNum.."]"..itemClass);
+--     end
+--   end           
+--   
+--   
+--      
+--   -- 11 = Battle Pets
+--   
+--   classNum = 11;
+--   local itemClasses = { GetAuctionItemSubClasses(classNum) };
+--   if #itemClasses > 0 then
+--     local subclassNum, itemClass;
+--     for subclassNum, itemClass in pairs(itemClasses) do
+--       print("["..classNum.."]["..subclassNum.."]"..itemClass);
+--     end
+--   end           
+   
+   
+   local myPetNeedList = {};
+   local needCount = 0;
+   
+   local myNumPets, myNumOwned = C_PetJournal.GetNumPets();
+--   print("myNumPets="..myNumPets.." myNumOwned="..myNumOwned);
+   
+   for myPetIndex=1, myNumPets do
+      local petID, speciesID, owned, customName, level, favorite, isRevoked, speciesName, icon, petType, companionID, tooltip, description, isWild, canBattle, isTradeable, isUnique, obtainable = C_PetJournal.GetPetInfoByIndex(myPetIndex);
+      if ( owned == false ) then
+         needCount = needCount + 1;
+         myPetNeedList[needCount] = {};
+         myPetNeedList[needCount].speciesName = speciesName;
+--         print("speciesName["..needCount.."]="..speciesName);
+      end
+   end
+
+
+
+   local batch,count = GetNumAuctionItems("list");
+   
+   local foundMissingPet = false;
+   if batch > 0 then
+      local index;
+      for index=1,batch do
+         local itemName, itemtexture, itemcount, itemquality, itemcanUse, itemlevel, itemlevelColHeader, itemminBid, itemminIncrement, itembuyoutPrice, itembidAmount, itemhighBidder, itembidderFullName, itemowner, itemownerFullName, itemsaleStatus, itemId, itemhasAllInfo =  GetAuctionItemInfo("list",index);
+
+--         local formattedInfo = string.format("%s(%d)%s%s",yellow,level,  RARITY_COLOR[rarity],name)
+         
+         local neededCheckIndex;
+         for neededCheckIndex=1,needCount do
+            if ( itemName == myPetNeedList[neededCheckIndex].speciesName ) then
+               print(white.."Need "..RARITY_COLOR[itemquality+1]..itemName..white.." bid="..yellow..(itemminBid/10000)..white.." buy="..yellow..(itembuyoutPrice/10000));
+               foundMissingPet = true;
+            end
+         end
+
+      end
+   end
+   
+   if ( foundMissingPet == false ) then
+      print(white.."Searched through "..batch.." auctions looking for "..needCount.." missing pets. Found none.");
+   end
+
+end
+
 
 function PetBattlePlanner_FixDB()
    local name,npcInfo
@@ -1091,21 +1163,25 @@ function PetBattlePlanner_SetCurrentTeam()
                   
          local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(petGUID);
          local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petGUID);
-      
-         local formattedInfo = string.format("%s(%d)%s%s",yellow,level,  RARITY_COLOR[rarity],name)
-         reportText = reportText..formattedInfo;
-         
-         C_PetJournal.SetPetLoadOutInfo(slotIndex,petGUID);
-         
-         -- set the ability list
-         local abilityIndex;
-         for abilityIndex = 1,3 do
-            if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList ~= nil ) and
-               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= nil ) and
-               ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= 0 ) then
-               C_PetJournal.SetAbility(slotIndex, abilityIndex, PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex]);
-               formattedInfo = string.format("%s%d,",white,PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] )
-               reportText = reportText..formattedInfo;
+
+         if ( name == nil ) then
+            print(red.."Error "..white.."pet in slot "..slotIndex.." does not exist. Reassign slot to valid pet.");
+         else
+            local formattedInfo = string.format("%s(%d)%s%s",yellow,level,  RARITY_COLOR[rarity],name)
+            reportText = reportText..formattedInfo;
+            
+            C_PetJournal.SetPetLoadOutInfo(slotIndex,petGUID);
+            
+            -- set the ability list
+            local abilityIndex;
+            for abilityIndex = 1,3 do
+               if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList ~= nil ) and
+                  ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= nil ) and
+                  ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] ~= 0 ) then
+                  C_PetJournal.SetAbility(slotIndex, abilityIndex, PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex]);
+                  formattedInfo = string.format("%s%d,",white,PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].AbilityList[abilityIndex] )
+                  reportText = reportText..formattedInfo;
+               end
             end
          end
       end
