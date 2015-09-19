@@ -12,7 +12,7 @@
             PetBattlePlanner:RegisterEvent("PET_BATTLE_OPENING_DONE"); 
             PetBattlePlanner:RegisterEvent("PET_BATTLE_OPENING_START"); 
             PetBattlePlanner:RegisterEvent("PLAYER_TARGET_CHANGED"); 
---            PetBattlePlanner:RegisterEvent("UNIT_TARGET"); 
+            PetBattlePlanner:RegisterEvent("UNIT_TARGET"); 
             
          </OnLoad> 
          <OnEvent> 
@@ -26,8 +26,8 @@
                PetBattlePlanner_handle_PET_BATTLE_OPENING_START(); 
             elseif (event == "PLAYER_TARGET_CHANGED") then 
                PetBattlePlanner_handle_PLAYER_TARGET_CHANGED(); 
---            elseif (event == "UNIT_TARGET") then 
---               PetBattlePlanner_handle_UNIT_TARGET(); 
+            elseif (event == "UNIT_TARGET") then 
+               PetBattlePlanner_handle_UNIT_TARGET(); 
             
             end 
          </OnEvent> 
