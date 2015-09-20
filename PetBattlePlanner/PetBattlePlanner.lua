@@ -726,11 +726,11 @@ function PetBattlePlanner_GetLowestRarity()
 end
 
 function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
-   print("Got PET_BATTLE_OPENING_START");
+--   print("Got PET_BATTLE_OPENING_START");
 
    if ( (PetBattlePlanner_lastTargetName ~= nil) and                -- we have an opponent name
         ( C_PetBattles.IsPlayerNPC(PET_OWNER_OPPONENT) ) ) then       -- we have an NPC opponent
-   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT");
+--   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT");
 
       if ( PetBattlePlanner_db == nil ) then PetBattlePlanner_db = {}; end
       if ( PetBattlePlanner_db["Opponents"] == nil ) then PetBattlePlanner_db["Opponents"] = {}; end
@@ -738,7 +738,7 @@ function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
       -- determine lowest pet rarity.  we want to only track trainer with good pets.
       if ( PetBattlePlanner_GetLowestRarity() >= 4 ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
          local numPets = C_PetBattles.GetNumPets(PET_OWNER_OPPONENT);
-   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT with rare pets");
+--   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT with rare pets");
 
          print("Battling "..PetBattlePlanner_lastTargetName);
 
@@ -759,7 +759,7 @@ function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
             local speciesID = C_PetBattles.GetPetSpeciesID(PET_OWNER_OPPONENT, petIndex);
 --            print("speciesID="..speciesID)
 
-            print("pet["..petIndex.."] = "..petName.."   species = "..speciesName.."  rarity="..rarity);
+--            print("pet["..petIndex.."] = "..petName.."   species = "..speciesName.."  rarity="..rarity);
 
             PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex] = {};
             PetBattlePlanner_db["Opponents"][PetBattlePlanner_lastTargetName]["Team"][petIndex]["Name"] = petName;
@@ -856,12 +856,12 @@ end
 
 
 function PetBattlePlanner_handle_UNIT_TARGET()
-   print("Got to UNIT_TARGET");
+--   print("Got to UNIT_TARGET");
    local lastTargetName = GetUnitName("target");
 
    if ( lastTargetName ) then
       PetBattlePlanner_lastTargetName = lastTargetName;
-      print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
+--      print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
    end
 end
 
@@ -1512,7 +1512,7 @@ function PetBattlePlanner_UpdateGui()
             if ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil) and
                ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
                ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] ~= nil ) then
-print("PetBattlePlanner_OpponentName"..PetBattlePlanner_OpponentName);
+
                local displaySlotIndex = slotIndex;
                local petGUID        = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Id;
                local displayName    = PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex].Name;
@@ -1532,7 +1532,7 @@ print("PetBattlePlanner_OpponentName"..PetBattlePlanner_OpponentName);
                         displaySlotIndex = loopIndex;
                   end
                end
-print("slotIndex="..slotIndex.." petGUID="..petGUID);
+--print("slotIndex="..slotIndex.." petGUID="..petGUID);
                local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(petGUID);
 --               local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, obtainable = C_PetJournal.GetPetInfoByPetID(petGUID);
                local health, maxHealth, power, speed, rarity = C_PetJournal.GetPetStats(petGUID);
@@ -3004,6 +3004,7 @@ function PetBattlePlanner_SetUpGuiFields()
    PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrame = {};
    PetBattlePlanner_TeamListPetInfoFrameAbilitySelectedFrameTexture = {};
    PetBattlePlanner_TeamListPetInfoFrameClearFrame = {};
+   PetBattlePlanner_TeamListPetInfoFrameClearButton = {};
    PetBattlePlanner_EnemyTeamPetPortraitEnemyFrame = {};
    PetBattlePlanner_EnemyTeamPetPortraitEnemyTexture = {};
    PetBattlePlanner_EnemyTeamListPetInfoFrameTypeIcon = {};
@@ -3371,6 +3372,25 @@ function PetBattlePlanner_SetUpGuiFields()
             texture:SetTexture("Interface\\PetBattles\\DeadPetIcon")
 --            texture:SetTexCoord(0, 1 ,0, 1)
             PetBattlePlanner_TeamListPetInfoFrameClearFrame[frameIndex] = texture;
+            local myButton = CreateFrame("Button", "PetBattlePlanner_TeamListPetInfoFrameClearButton"..frameIndex, PetBattlePlanner_TeamListPetPortraitFrame[frameIndex] )
+            myButton:SetWidth(13);
+            myButton:SetHeight(13);
+            myButton:SetPoint("TOPLEFT", PetBattlePlanner_TeamListPetInfoFrameClearFrame[frameIndex], "TOPLEFT", 0,0);
+            myButton:SetScript("OnEnter",
+                     function(this)
+                        GameTooltip_SetDefaultAnchor(GameTooltip, this)
+                        GameTooltip:SetText("Click to clear this team slot.");
+                        GameTooltip:Show()
+                     end)
+            myButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+            myButton:SetScript("OnClick",
+               function(self,button,down)
+                  PetBattlePlanner_HandleTeamSlotClear(self.teamSlot)
+               end)
+
+            myButton.teamSlot    = frameIndex;
+            PetBattlePlanner_TeamListPetInfoFrameClearButton[frameIndex] = myButton;
          end
 --xxxx
 
@@ -3643,5 +3663,20 @@ function PetBattlePlanner_HandleAbilitySelection(abilityID,abilitySlot,slotIndex
 
 end
 
-
+function PetBattlePlanner_HandleTeamSlotClear(slotIndex)
+   if ( PetBattlePlanner_db ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName] ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam ~= nil ) and
+      ( PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] ~= nil ) then
+         
+   print("Clearing team slot "..slotIndex);
+      PetBattlePlanner_db["Opponents"][PetBattlePlanner_OpponentName].MyTeam[slotIndex] = nil;
+      
+       -- redraw the screen so the changes are visible.
+      PetBattlePlanner_UpdateGui();
+     
+   end
+   
+end
 
