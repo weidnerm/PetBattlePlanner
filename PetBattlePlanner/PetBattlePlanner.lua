@@ -1892,21 +1892,45 @@ function PetBattlePlanner_SetUpGuiFields()
 
       table.sort(opponentList);
 
+      local currentOpponentIndex, numEntriesPerMenu, remainingOpponents, numEntriesThisMenu;
+      numEntriesPerMenu = 10
+      local numTopLevelMenuEntries = math.floor((#opponentList+(numEntriesPerMenu-1))/numEntriesPerMenu);
+--      menuIndex = 2;
+      remainingOpponents = #opponentList
+      currentOpponentIndex = 1
+         
+      for topLevelMenuIndex = 1, numTopLevelMenuEntries do
+         numEntriesThisMenu = remainingOpponents
+         if ( numEntriesThisMenu > numEntriesPerMenu) then
+            numEntriesThisMenu = numEntriesPerMenu
+         end
+         remainingOpponents = remainingOpponents - numEntriesThisMenu
+         
+         menuTbl[topLevelMenuIndex+1] = {};
+         menuTbl[topLevelMenuIndex+1].hasArrow = true;
+         menuTbl[topLevelMenuIndex+1].notCheckable = true;
+         menuTbl[topLevelMenuIndex+1].text = opponentList[currentOpponentIndex].." - "..opponentList[currentOpponentIndex+numEntriesThisMenu-1]
 
-      menuIndex = 2;
-      for opponentIndex=1,#opponentList do
-         opponentName = opponentList[opponentIndex]
-         menuTbl[menuIndex] = {};
-         menuTbl[menuIndex].hasArrow = false;
-         menuTbl[menuIndex].notCheckable = true;
-         menuTbl[menuIndex].text = opponentName
-         menuTbl[menuIndex].arg1 = opponentName
-         menuTbl[menuIndex].func = function(self, arg)
-            PetBattlePlanner_SetOpponentNpcName(arg);
-            end
+         local tempPlayerList = {};
 
-         menuIndex = menuIndex + 1;
+         for subMenuIndex = 1, numEntriesThisMenu do
+            opponentName = opponentList[currentOpponentIndex]
+            tempPlayerList[subMenuIndex] = {}
+            tempPlayerList[subMenuIndex].hasArrow = false;
+            tempPlayerList[subMenuIndex].notCheckable = true;
+            tempPlayerList[subMenuIndex].text = opponentName;
+            tempPlayerList[subMenuIndex].arg1 = opponentName;
+            tempPlayerList[subMenuIndex].func = function(self, arg)
+                  PetBattlePlanner_SetOpponentNpcName(arg);
+               end
+            currentOpponentIndex = currentOpponentIndex+1
+         end
+         menuTbl[topLevelMenuIndex+1].menuList = tempPlayerList
       end
+
+
+
+
 
 
       local item = PetBattlePlanner_TabPage1:CreateFontString("PetBattlePlanner_TabPage1_OpponentNPCNameFrame", "OVERLAY", "GameFontNormalSmall" )
