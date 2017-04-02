@@ -512,6 +512,7 @@ local PetBattlePlanner_SelAttackVsHim = ATTACK_STRONG;
 local PetBattlePlanner_SelAttackVsMe = ATTACK_WEAK;
 local playerSortedList = {};
 
+local PetBattlePlanner_dbLoadForce = 0;
 
 -- ****************************************************
 -- * ON_LOAD COMMANDS *
@@ -580,6 +581,9 @@ function PetBattlePlanner_Slash_Handler(msg)
    elseif (msg == "report") then
       PetBattlePlanner_GenerateReport();
       print("Report generation complete");
+   elseif (msg == "dbforce") then
+      PetBattlePlanner_dbLoadForce = 1;
+      print("Will Force Load of next pet battle");
    elseif (msg == "test1") then
       print("Got to test1");
 
@@ -730,15 +734,19 @@ function PetBattlePlanner_handle_PET_BATTLE_OPENING_START()
 
    if ( (PetBattlePlanner_lastTargetName ~= nil) and                -- we have an opponent name
         ( C_PetBattles.IsPlayerNPC(PET_OWNER_OPPONENT) ) ) then       -- we have an NPC opponent
---   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT");
+   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT");
 
       if ( PetBattlePlanner_db == nil ) then PetBattlePlanner_db = {}; end
       if ( PetBattlePlanner_db["Opponents"] == nil ) then PetBattlePlanner_db["Opponents"] = {}; end
 
       -- determine lowest pet rarity.  we want to only track trainer with good pets.
-      if ( PetBattlePlanner_GetLowestRarity() >= 4 ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
+       print("PetBattlePlanner_GetLowestRarity() = "..PetBattlePlanner_GetLowestRarity() );
+      
+      if ( (PetBattlePlanner_dbLoadForce == 1 ) or
+           (PetBattlePlanner_GetLowestRarity() >= 4 ) ) then -- trainers will have good pets. Number - 1: "Poor", 2: "Common", 3: "Uncommon", 4: "Rare", 5: "Epic", 6: "Legendary"
          local numPets = C_PetBattles.GetNumPets(PET_OWNER_OPPONENT);
---   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT with rare pets");
+   print("Got PET_BATTLE_OPENING_START with PET_OWNER_OPPONENT with rare pets");
+         if (PetBattlePlanner_dbLoadForce == 1 ) then PetBattlePlanner_dbLoadForce = 0; print("Reset PetBattlePlanner_dbLoadForce so next will not be loaded."); end
 
          print("Battling "..PetBattlePlanner_lastTargetName);
 
@@ -861,7 +869,7 @@ function PetBattlePlanner_handle_UNIT_TARGET()
 
    if ( lastTargetName ) then
       PetBattlePlanner_lastTargetName = lastTargetName;
---      print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
+      print("UNIT_TARGET->"..PetBattlePlanner_lastTargetName);
    end
 end
 
